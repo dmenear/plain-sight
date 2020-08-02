@@ -4,8 +4,25 @@
         <link rel="stylesheet" href="css/styles.css" />
     </head>
     <body>
-        <strong>Active Key:</strong><br>
-        <input id="plainSightActiveKey" type="text" /><br>
+        <table>
+            <tr>
+                <td style="text-align: left;">
+                    <strong>Active Key:</strong><br>
+                    <input id="plainSightActiveKey" type="text" /><br>
+                </td>
+                <td style="text-align: right;">
+                    <button id="btnRefresh">Refresh Page</button>
+                </td>
+            </tr>
+        </table>
+        <hr>
+        <h2>Encrypt Message</h2>
+        <textarea id="txtAreaToEncrypt"></textarea><br>
+        <span id="btnWrapper"><button id="btnEncrypt">Encrypt</button></span><br>
+        <textarea readonly id="txtAreaEncrypted"></textarea>
     </body>
+    <script src="js/sha256.min.js"></script>
+    <script src="js/aes.js"></script>
+    <script src="js/cryptofunctions.js"></script>
     <script src="js/popup.js"></script>
 </html>

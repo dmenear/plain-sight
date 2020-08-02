@@ -5,7 +5,7 @@
     "manifest_version": 2,
 
     "permissions": [
-        "clipboardWrite",
+        "contextMenus",
         "storage"
     ],
 
@@ -17,7 +17,7 @@
     "content_scripts": [
         {
             "matches": ["*://*/*"],
-            "js": ["js/content.js"]
+            "js": ["js/sha256.min.js", "js/aes.js", "js/cryptofunctions.js", "js/content.js"]
         }
     ],
 
