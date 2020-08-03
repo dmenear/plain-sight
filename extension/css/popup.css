@@ -24,6 +24,11 @@ textarea {
     margin: 5px;
 }
 
+#activeKeyCell {
+    text-align: center;
+    vertical-align: bottom;
+}
+
 #btnWrapper {
     display: flex;
     align-items: center;
@@ -34,7 +39,24 @@ textarea {
     display: none;
 }
 
+#decryptPageCell {
+    text-align: right;
+    display: none;
+    vertical-align: bottom;
+}
+
 #decryptTitleCell {
     color: lightgray;
     cursor: pointer;
+}
+
+#versionCell {
+    background: transparent url(/images/icon16.png) no-repeat left center;
+    padding-left: 20px;
+    color: gray;
+}
+
+#versionHR {
+    border-top: 1px solid lightgray;
+    margin-bottom: 10px;
 }

@@ -1,7 +1,7 @@
 const activeKeyTextBox = document.getElementById("plainSightActiveKey");
 const encryptButton = document.getElementById("btnEncrypt");
 const decryptButton = document.getElementById("btnDecrypt");
-const refreshButton = document.getElementById("btnRefresh");
+const pageDecryptButton = document.getElementById("btnDecryptPage");
 const toEncryptTextArea = document.getElementById("txtAreaToEncrypt");
 const encryptedTextArea = document.getElementById("txtAreaEncrypted");
 const toDecryptTextArea = document.getElementById("txtAreaToDecrypt");
@@ -11,6 +11,9 @@ const encryptTitleCell = document.getElementById("encryptTitleCell");
 const decryptTitleCell = document.getElementById("decryptTitleCell");
 const encryptForm = document.getElementById("encryptForm");
 const decryptForm = document.getElementById("decryptForm");
+const activeKeyCell = document.getElementById("activeKeyCell");
+const decryptPageCell = document.getElementById("decryptPageCell");
+
 const msgPattern = /443\{(.+)\}336/g;
 
 const updateKey = function(newKey){
@@ -60,6 +63,18 @@ const resetEncryptTextArea = function(){
     encryptButton.innerHTML = "Encrypt";
 }
 
+const updateAutoDecryptUI = function(){
+    if(autoDecryptCheckbox.checked){
+        activeKeyCell.colSpan = "2";
+        activeKeyCell.style.textAlign = "center";
+        decryptPageCell.style.display = "none";
+    } else{
+        activeKeyCell.colSpan = "1";
+        activeKeyCell.style.textAlign = "left";
+        decryptPageCell.style.display = "table-cell";
+    }
+}
+
 activeKeyTextBox.addEventListener("keyup", function() {
     updateKey(activeKeyTextBox.value);
     resetEncryptTextArea();
@@ -67,6 +82,7 @@ activeKeyTextBox.addEventListener("keyup", function() {
 
 autoDecryptCheckbox.addEventListener("change", function() {
     updateAutoDecrypt(autoDecryptCheckbox.checked);
+    updateAutoDecryptUI();
 });
 
 encryptTitleCell.addEventListener("click", function() {
@@ -95,9 +111,15 @@ decryptButton.addEventListener("click", function(){
     decryptMessage();
 });
 
-refreshButton.addEventListener("click", function() {
+pageDecryptButton.addEventListener("click", function() {
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-        chrome.tabs.reload(tabs[0].id);
+        chrome.tabs.sendMessage(tabs[0].id, {messageType: "fullDecrypt"}, function(tabs){
+            if(chrome.runtime.lastError){
+                console.log("PlainSight: Content scripts are not injected in active tab.");
+            } else{
+                console.log("PlainSight: Page decryption complete.");
+            }
+        });
     });
 });
 
@@ -123,4 +145,5 @@ chrome.storage.sync.get(["activeKey"], function(result){
 
 chrome.storage.sync.get(["autoDecrypt"], function(result){
     autoDecryptCheckbox.checked = result["autoDecrypt"];
+    updateAutoDecryptUI();
 });

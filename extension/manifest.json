@@ -1,7 +1,7 @@
 {
     "name": "PlainSight",
     "version": "1.0.0",
-    "description": "Send and receive messages hidden in plain sight",
+    "description": "Send and receive messages hidden in plain sight.",
     "manifest_version": 2,
 
     "permissions": [
@@ -20,7 +20,8 @@
         {
             "matches": ["*://*/*"],
             "all_frames": true,
-            "js": ["js/sha256.min.js", "js/aes.js", "js/cryptofunctions.js", "js/content.js"]
+            "js": ["js/sha256.min.js", "js/aes.js", "js/cryptofunctions.js", "js/content.js"],
+            "css": ["css/content.css"]
         }
     ],
 

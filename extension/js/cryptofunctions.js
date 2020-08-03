@@ -11,6 +11,10 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
     if(request.messageType === "updatedKey"){
         activeKey = request.newValue;
         sendResponse({message: "success"});
+        if(typeof reprocessMessages !== "undefined"){
+            console.log("PlainSight: Key updated, reprocessing messages");
+            reprocessMessages();
+        }
     }
 });
 
