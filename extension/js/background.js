@@ -8,7 +8,7 @@ chrome.runtime.onInstalled.addListener(function() {
         if (info.menuItemId == "force-decrypt") {
             chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
                 chrome.tabs.sendMessage(tabs[0].id, {messageType: "fullDecrypt"}, function(tabs){
-                    console.log("Force decryption complete");
+                    console.log("PlainSight: Force decryption complete");
                 });
             });
         }

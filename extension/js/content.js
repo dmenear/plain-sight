@@ -26,7 +26,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
         decryptMessages(true);
         sendResponse({message: "success"});
     } else if(request.messageType === "updatedAutoDecrypt"){
-        autoDecrypt = request.enabled;
+        autoDecrypt = request.newValue;
         if(autoDecrypt){
             decryptMessages(false);
         }

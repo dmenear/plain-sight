@@ -18,15 +18,28 @@
                 <td style="text-align: center;" colspan="2">
                     <br />
                     <input type="checkbox" id="chkAutoDecrypt" name="autoDecrypt" checked />
-                    <label for="autoDecrypt">Automatically decrypt page</label>
+                    <label for="autoDecrypt">Automatically decrypt page using active key</label>
                 </td>
             </tr>
         </table>
         <hr>
-        <h2>Encrypt Message</h2>
-        <textarea id="txtAreaToEncrypt"></textarea><br>
-        <span id="btnWrapper"><button id="btnEncrypt">Encrypt</button></span><br>
-        <textarea readonly id="txtAreaEncrypted"></textarea>
+        <table>
+            <tr>
+                <td id="encryptTitleCell"><h2>Encrypt Message</h2></td>
+                <td style="text-align: center;"><h2>|</h2></td>
+                <td id="decryptTitleCell" style="text-align: right;"><h2>Decrypt Message</h2></td>
+            </tr>
+        </table>
+        <table id="encryptForm">
+            <tr><td><textarea id="txtAreaToEncrypt"></textarea></td></tr>
+            <tr><td><span id="btnWrapper"><button id="btnEncrypt">Encrypt</button></span></td></tr>
+            <tr><td><textarea readonly id="txtAreaEncrypted"></textarea></td></tr>
+        </table>
+        <table id="decryptForm">
+            <tr><td><textarea id="txtAreaToDecrypt"></textarea></td></tr>
+            <tr><td><span id="btnWrapper"><button id="btnDecrypt">Decrypt</button></span></td></tr>
+            <tr><td><textarea readonly id="txtAreaDecrypted"></textarea></td></tr>
+        </table>
     </body>
     <script src="js/sha256.min.js"></script>
     <script src="js/aes.js"></script>

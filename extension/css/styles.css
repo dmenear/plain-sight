@@ -18,8 +18,8 @@ table {
 }
 
 textarea {
-    width: 400px;
-    height: 150px;
+    width: 350px;
+    height: 125px;
     resize: none;
     margin: 5px;
 }
@@ -28,4 +28,13 @@ textarea {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+#decryptForm {
+    display: none;
+}
+
+#decryptTitleCell {
+    color: lightgray;
+    cursor: pointer;
 }

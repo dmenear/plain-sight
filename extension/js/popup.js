@@ -1,25 +1,35 @@
 const activeKeyTextBox = document.getElementById("plainSightActiveKey");
 const encryptButton = document.getElementById("btnEncrypt");
+const decryptButton = document.getElementById("btnDecrypt");
 const refreshButton = document.getElementById("btnRefresh");
 const toEncryptTextArea = document.getElementById("txtAreaToEncrypt");
 const encryptedTextArea = document.getElementById("txtAreaEncrypted");
+const toDecryptTextArea = document.getElementById("txtAreaToDecrypt");
+const decryptedTextArea = document.getElementById("txtAreaDecrypted");
 const autoDecryptCheckbox = document.getElementById("chkAutoDecrypt");
+const encryptTitleCell = document.getElementById("encryptTitleCell");
+const decryptTitleCell = document.getElementById("decryptTitleCell");
+const encryptForm = document.getElementById("encryptForm");
+const decryptForm = document.getElementById("decryptForm");
+const msgPattern = /443\{(.+)\}336/g;
 
 const updateKey = function(newKey){
-    chrome.storage.sync.set({"activeKey": newKey}, function() {
-        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-            chrome.tabs.sendMessage(tabs[0].id, {messageType: "updatedKey", newKeyVal: newKey}, function(response){
-                console.log("Content update sent. Response: " + response.message);
-            });
-        });
-    });
+    updateContentValue("activeKey", newKey, "updatedKey");
 }
 
 const updateAutoDecrypt = function(newValue){
-    chrome.storage.sync.set({"autoDecrypt": newValue}, function() {
+    updateContentValue("autoDecrypt", newValue, "updatedAutoDecrypt");
+}
+
+const updateContentValue = function(key, value, messageType){
+    chrome.storage.sync.set({[key]: value}, function() {
         chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-            chrome.tabs.sendMessage(tabs[0].id, {messageType: "updatedAutoDecrypt", enabled: newValue}, function(response){
-                console.log("Content update sent. Response: " + response.message);
+            chrome.tabs.sendMessage(tabs[0].id, {messageType: messageType, newValue: value}, function(response){
+                if(chrome.runtime.lastError){
+                    console.log("PlainSight: No content update sent. Content scripts are not injected in active tab.");
+                } else{
+                    console.log("PlainSight: Content update sent. Response: " + response.message);
+                }
             });
         });
     });
@@ -33,6 +43,15 @@ const encryptMessage = function(){
         document.execCommand("copy");
         encryptButton.innerHTML = "Copied to Clipboard";
         encryptButton.disabled = true;
+    }
+}
+
+const decryptMessage = function(){
+    var decryptText = document.getElementById("txtAreaToDecrypt").value;
+    if(decryptText.search(msgPattern) >= 0){
+        var match = msgPattern.exec(decryptText);
+        decryptedTextArea.value = getDecryptedMessage(match[1], activeKeyTextBox.value);
+        decryptedTextArea.focus();
     }
 }
 
@@ -50,8 +69,30 @@ autoDecryptCheckbox.addEventListener("change", function() {
     updateAutoDecrypt(autoDecryptCheckbox.checked);
 });
 
+encryptTitleCell.addEventListener("click", function() {
+    decryptTitleCell.style.color = "lightgray";
+    decryptTitleCell.style.cursor = "pointer";
+    encryptTitleCell.style.color = "black";
+    encryptTitleCell.style.cursor = "auto";
+    decryptForm.style.display = "none";
+    encryptForm.style.display = "table";
+});
+
+decryptTitleCell.addEventListener("click", function() {
+    encryptTitleCell.style.color = "lightgray";
+    encryptTitleCell.style.cursor = "pointer";
+    decryptTitleCell.style.color = "black";
+    decryptTitleCell.style.cursor = "auto";
+    encryptForm.style.display = "none";
+    decryptForm.style.display = "table";
+});
+
 encryptButton.addEventListener("click", function(){
     encryptMessage();
+});
+
+decryptButton.addEventListener("click", function(){
+    decryptMessage();
 });
 
 refreshButton.addEventListener("click", function() {
@@ -67,6 +108,12 @@ toEncryptTextArea.addEventListener("keyup", function(){
 toEncryptTextArea.addEventListener("keydown", function(event){
     if(event.keyCode == 13){
         encryptMessage();
+    }
+});
+
+toDecryptTextArea.addEventListener("keydown", function(event){
+    if(event.keyCode == 13){
+        decryptMessage();
     }
 });
 

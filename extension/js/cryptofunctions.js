@@ -9,7 +9,7 @@ chrome.storage.sync.get(["activeKey"], function(result){
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
     if(request.messageType === "updatedKey"){
-        activeKey = request.newKeyVal;
+        activeKey = request.newValue;
         sendResponse({message: "success"});
     }
 });
