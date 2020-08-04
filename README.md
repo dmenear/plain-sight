@@ -1,4 +1,4 @@
-# PlainSight Chrome Extension
+# PlainSight Chrome Extension v1.0.1
 
 PlainSight is a Chrome extension designed to allow users to secretly communicate in plain sight. Messages are encrypted and stored within a custom tag as hex. These messages can be placed anywhere on the web and if this extension is installed, they will be automatically decrypted and readable by other users that are using the same key. If other users are using a different key, no error will be thrown but the message will be garbled.
 
