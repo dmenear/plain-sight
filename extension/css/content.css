@@ -4,4 +4,5 @@
     padding: 1px 3px !important;
     border-radius: 5px !important;
     line-height: 1.5 !important;
+    display: inline-block;
 }
