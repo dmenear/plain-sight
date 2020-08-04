@@ -25,7 +25,7 @@ textarea {
 }
 
 #activeKeyCell {
-    text-align: center;
+    text-align: left;
     vertical-align: bottom;
 }
 
@@ -41,7 +41,6 @@ textarea {
 
 #decryptPageCell {
     text-align: right;
-    display: none;
     vertical-align: bottom;
 }
 

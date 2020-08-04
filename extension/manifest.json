@@ -5,24 +5,21 @@
     "manifest_version": 2,
 
     "permissions": [
+        "activeTab",
         "clipboardRead",
         "contextMenus",
         "storage"
+    ],
+
+    "optional_permissions": [
+        "tabs",
+        "*://*/*"
     ],
 
     "background": {
         "scripts": ["js/background.js"],
         "persistent": false
     },
-
-    "content_scripts": [
-        {
-            "matches": ["*://*/*"],
-            "all_frames": true,
-            "js": ["js/sha256.min.js", "js/aes.js", "js/cryptofunctions.js", "js/common.js", "js/content.js"],
-            "css": ["css/content.css"]
-        }
-    ],
 
     "browser_action": {
         "default_popup": "popup.html",

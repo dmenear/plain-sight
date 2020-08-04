@@ -1,3 +1,4 @@
+// Elements from popup
 const activeKeyTextBox = document.getElementById("plainSightActiveKey");
 const encryptButton = document.getElementById("btnEncrypt");
 const decryptButton = document.getElementById("btnDecrypt");
@@ -8,18 +9,22 @@ const encryptedTextArea = document.getElementById("txtAreaEncrypted");
 const toDecryptTextArea = document.getElementById("txtAreaToDecrypt");
 const decryptedTextArea = document.getElementById("txtAreaDecrypted");
 const autoDecryptCheckbox = document.getElementById("chkAutoDecrypt");
+const activeKeyCell = document.getElementById("activeKeyCell");
 const encryptTitleCell = document.getElementById("encryptTitleCell");
+const decryptPageCell = document.getElementById("decryptPageCell");
 const decryptTitleCell = document.getElementById("decryptTitleCell");
 const encryptForm = document.getElementById("encryptForm");
 const decryptForm = document.getElementById("decryptForm");
-const activeKeyCell = document.getElementById("activeKeyCell");
-const decryptPageCell = document.getElementById("decryptPageCell");
 const hightlightColorSelector = document.getElementById("hightlightColor");
 const fontColorSelector = document.getElementById("fontColor");
 const sampleDecryptedText = document.getElementById("sampleDecrypted");
 
-const updateKey = function(newKey){
-    updateContentValue("activeKey", newKey, "updatedKey");
+// Variables
+var shiftPressed = false;
+
+// Functions
+const updateKey = function(newValue){
+    updateContentValue("activeKey", newValue, "updatedKey");
 }
 
 const updateAutoDecrypt = function(newValue){
@@ -77,14 +82,37 @@ const updateAutoDecryptUI = function(){
     }
 }
 
+// Event listeners
+document.body.addEventListener("keydown", function(event){
+    if(event.keyCode == 16){
+        shiftPressed = true;
+    }
+})
+
+document.body.addEventListener("keyup", function(event){
+    if(event.keyCode == 16){
+        shiftPressed = false;
+    }
+})
+
 activeKeyTextBox.addEventListener("keyup", function() {
     updateKey(activeKeyTextBox.value);
     resetEncryptTextArea();
 });
 
 autoDecryptCheckbox.addEventListener("change", function() {
-    updateAutoDecrypt(autoDecryptCheckbox.checked);
-    updateAutoDecryptUI();
+    chrome.permissions.request({
+        permissions: ["tabs"],
+        origins: ["*://*/*"]
+    }, function(granted) {
+        if (granted) {
+            updateAutoDecrypt(autoDecryptCheckbox.checked);
+            updateAutoDecryptUI();
+        } else {
+            autoDecryptCheckbox.checked = false;
+        }
+    });
+    
 });
 
 encryptTitleCell.addEventListener("click", function() {
@@ -142,13 +170,13 @@ toEncryptTextArea.addEventListener("keyup", function(){
 });
 
 toEncryptTextArea.addEventListener("keydown", function(event){
-    if(event.keyCode == 13){
+    if(event.keyCode == 13 && !shiftPressed){
         encryptMessage();
     }
 });
 
 toDecryptTextArea.addEventListener("keydown", function(event){
-    if(event.keyCode == 13){
+    if(event.keyCode == 13 && !shiftPressed){
         decryptMessage();
     }
 });
@@ -167,6 +195,14 @@ fontColorSelector.addEventListener("input", function(){
 
 fontColorSelector.addEventListener("change", function(){
     updateContentValue("fontColor", fontColorSelector.value, "updatedFontColor");
+});
+
+// Initialize
+chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+    chrome.runtime.sendMessage({
+        messageType: "activateExtension",
+        tabId: tabs[0].id
+    });
 });
 
 chrome.storage.sync.get(["activeKey"], function(result){

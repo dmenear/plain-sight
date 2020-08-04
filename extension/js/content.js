@@ -1,4 +1,4 @@
-const config = { characterData: true, childList: true, subtree: true };
+const mutationObserverConfig = { characterData: true, childList: true, subtree: true };
 var autoDecrypt;
 var hightlightColor;
 var fontColor;
@@ -42,7 +42,6 @@ const reprocessMessages = function(){
     for(let messageTag of decryptedMessageTags){
         var encryptedText = messageTag.getAttribute("data-ps-encrypted");
         messageTag.innerHTML = getDecryptedMessage(encryptedText, null);
-        console.log(getDecryptedMessage(encryptedText, null));
         updateColors();
     }
 }
@@ -59,11 +58,21 @@ const revertPage = function(){
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
     if(request.messageType === "fullDecrypt"){
-        decryptMessages(true);
-        sendResponse({message: "success"});
+        if(!autoDecrypt){
+            decryptMessages(true);
+            sendResponse({message: "success"});
+        } else{
+            alert("PlainSight: Cannot manually decrypt page when automatic decryption is enabled!");
+            sendResponse({message: "failure"});
+        }
     } else if(request.messageType === "revertPage"){
-        revertPage();
-        sendResponse({message: "success"});
+        if(!autoDecrypt){
+            revertPage();
+            sendResponse({message: "success"});
+        } else{
+            alert("PlainSight: Cannot revert page when automatic decryption is enabled!");
+            sendResponse({message: "failure"});
+        }  
     } else if(request.messageType === "updatedAutoDecrypt"){
         autoDecrypt = request.newValue;
         if(autoDecrypt){
@@ -78,6 +87,8 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
         fontColor = request.newValue;
         updateColors();
         sendResponse({message: "success"});
+    } else if(request.messageType === "heartbeat"){
+        sendResponse({message: "alive"});
     }
 });
 
@@ -99,4 +110,4 @@ chrome.storage.sync.get(["fontColor"], function(result){
 });
 
 const observer = new MutationObserver(mutationObserved);
-observer.observe(document.body, config);
+observer.observe(document.body, mutationObserverConfig);
