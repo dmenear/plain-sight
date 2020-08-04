@@ -8,7 +8,7 @@
             <tr><td id="versionCell">PlainSight v1.0.0</td></tr>
         </table>
         <hr id="versionHR">
-        <table>
+        <table style="table-layout: fixed;">
             <tr>
                 <td colspan="2" id="activeKeyCell">
                     <strong>Active Key:</strong><br>
@@ -23,6 +23,19 @@
                     <br />
                     <input type="checkbox" id="chkAutoDecrypt" name="autoDecrypt" checked />
                     <label for="autoDecrypt">Automatically decrypt page using active key</label>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: right; padding-top: 7px;">
+                    <label style="padding-right: 5px;" for="hightlightColor">Highlight Color</label><input type="color" value="#000000" id="hightlightColor" name="hightlightColor" />
+                </td>
+                <td style="text-align: left; padding-top: 7px;">
+                    <input type="color" value="#00ff00" id="fontColor" name="fontColor" /><label style="padding-left: 5px;" for="fontColor">Font Color</label>
+                </td>
+            </tr>
+            <tr>
+                <td style="padding-top: 5px; text-align: center;" colspan="2">
+                    <span id="sampleDecrypted">Decrypted Message</span>
                 </td>
             </tr>
         </table>
@@ -47,6 +60,7 @@
     </body>
     <script src="js/sha256.min.js"></script>
     <script src="js/aes.js"></script>
+    <script src="js/common.js"></script>
     <script src="js/cryptofunctions.js"></script>
     <script src="js/popup.js"></script>
 </html>

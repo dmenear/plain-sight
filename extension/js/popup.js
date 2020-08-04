@@ -13,8 +13,9 @@ const encryptForm = document.getElementById("encryptForm");
 const decryptForm = document.getElementById("decryptForm");
 const activeKeyCell = document.getElementById("activeKeyCell");
 const decryptPageCell = document.getElementById("decryptPageCell");
-
-const msgPattern = /443\{(.+)\}336/g;
+const hightlightColorSelector = document.getElementById("hightlightColor");
+const fontColorSelector = document.getElementById("fontColor");
+const sampleDecryptedText = document.getElementById("sampleDecrypted");
 
 const updateKey = function(newKey){
     updateContentValue("activeKey", newKey, "updatedKey");
@@ -139,6 +140,22 @@ toDecryptTextArea.addEventListener("keydown", function(event){
     }
 });
 
+hightlightColorSelector.addEventListener("input", function(){
+    sampleDecryptedText.style.backgroundColor = hightlightColorSelector.value;
+});
+
+hightlightColorSelector.addEventListener("change", function(){
+    updateContentValue("highlightColor", hightlightColorSelector.value, "updatedHightlightColor");
+});
+
+fontColorSelector.addEventListener("input", function(){
+    sampleDecryptedText.style.color = fontColorSelector.value;
+});
+
+fontColorSelector.addEventListener("change", function(){
+    updateContentValue("fontColor", fontColorSelector.value, "updatedFontColor");
+});
+
 chrome.storage.sync.get(["activeKey"], function(result){
     activeKeyTextBox.value = typeof result["activeKey"] !== "undefined" ? result["activeKey"] : "";
 });
@@ -146,4 +163,14 @@ chrome.storage.sync.get(["activeKey"], function(result){
 chrome.storage.sync.get(["autoDecrypt"], function(result){
     autoDecryptCheckbox.checked = result["autoDecrypt"];
     updateAutoDecryptUI();
+});
+
+chrome.storage.sync.get(["highlightColor"], function(result){
+    hightlightColorSelector.value = result["highlightColor"];
+    sampleDecryptedText.style.backgroundColor = result["highlightColor"];
+});
+
+chrome.storage.sync.get(["fontColor"], function(result){
+    fontColorSelector.value = result["fontColor"];
+    sampleDecryptedText.style.color = result["fontColor"];
 });

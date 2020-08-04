@@ -1,6 +1,7 @@
 const config = { characterData: true, childList: true, subtree: true };
-const msgPattern = /443\{(.+)\}336/g;
 var autoDecrypt;
+var hightlightColor;
+var fontColor;
 
 const mutationObserved = function(mutations, observer){
     if(autoDecrypt){
@@ -17,10 +18,22 @@ const decryptMessages = function(fullDecrypt){
     for(let element of allElements){
         for(let node of element.childNodes){
             if(node.nodeType === 3 && node.nodeValue.search(msgPattern) >= 0 && (!node.parentElement.isContentEditable || fullDecrypt)){
-                var match = msgPattern.exec(node.nodeValue);
-                node.parentElement.innerHTML = node.parentElement.innerHTML.replace(msgPattern, tagDecryptedMessage(match[1], getDecryptedMessage(match[1], null)));
+                var parentElement = node.parentElement;
+                while(parentElement.innerHTML.search(msgPattern) >= 0){
+                    var match = msgPattern.exec(node.nodeValue);
+                    parentElement.innerHTML = parentElement.innerHTML.replace(msgPattern, tagDecryptedMessage(match[1], getDecryptedMessage(match[1], null)));
+                    updateColors();
+                }
             }
         }
+    }
+}
+
+const updateColors = function(){
+    var decryptedMessageTags = document.getElementsByClassName("psDecryptedMessage");
+    for(let messageTag of decryptedMessageTags){
+        messageTag.style.color = fontColor;
+        messageTag.style.backgroundColor = hightlightColor;
     }
 }
 
@@ -30,6 +43,7 @@ const reprocessMessages = function(){
         var encryptedText = messageTag.getAttribute("data-ps-encrypted");
         messageTag.innerHTML = getDecryptedMessage(encryptedText, null);
         console.log(getDecryptedMessage(encryptedText, null));
+        updateColors();
     }
 }
 
@@ -43,6 +57,12 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
             decryptMessages(false);
         }
         sendResponse({message: "success"});
+    } else if(request.messageType === "updatedHightlightColor"){
+        hightlightColor = request.newValue;
+        updateColors();
+    } else if(request.messageType === "updatedFontColor"){
+        fontColor = request.newValue;
+        updateColors();
     }
 });
 
@@ -51,6 +71,16 @@ chrome.storage.sync.get(["autoDecrypt"], function(result){
     if(autoDecrypt){
         decryptMessages(false);
     }
+});
+
+chrome.storage.sync.get(["highlightColor"], function(result){
+    hightlightColor = result["highlightColor"];
+    updateColors();
+});
+
+chrome.storage.sync.get(["fontColor"], function(result){
+    fontColor = result["fontColor"];
+    updateColors();
 });
 
 const observer = new MutationObserver(mutationObserved);

@@ -19,7 +19,7 @@
         {
             "matches": ["*://*/*"],
             "all_frames": true,
-            "js": ["js/sha256.min.js", "js/aes.js", "js/cryptofunctions.js", "js/content.js"],
+            "js": ["js/sha256.min.js", "js/aes.js", "js/cryptofunctions.js", "js/common.js", "js/content.js"],
             "css": ["css/content.css"]
         }
     ],

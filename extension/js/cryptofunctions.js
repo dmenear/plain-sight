@@ -1,6 +1,3 @@
-const failedDecryption = "[[PS: message decryption failed]]";
-const failedEncryption = "[[PS: message encryption failed]]";
-const counterVal = 17;
 var activeKey;
 
 chrome.storage.sync.get(["activeKey"], function(result){
