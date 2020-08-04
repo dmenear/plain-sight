@@ -18,6 +18,9 @@ const decryptForm = document.getElementById("decryptForm");
 const hightlightColorSelector = document.getElementById("hightlightColor");
 const fontColorSelector = document.getElementById("fontColor");
 const sampleDecryptedText = document.getElementById("sampleDecrypted");
+const autoDecryptLabel = document.getElementById("lblAutoDecrypt");
+const elevatePermsRow = document.getElementById("elevatePermsRow");
+const elevatePerms = document.getElementById("elevatePerms");
 
 // Variables
 var shiftPressed = false;
@@ -43,6 +46,12 @@ const updateContentValue = function(key, value, messageType){
             });
         });
     });
+}
+
+const enableAutoDecryptOption = function(){
+    elevatePermsRow.style.display = "none";
+    autoDecryptLabel.style.color = "black";
+    autoDecryptCheckbox.disabled = false;
 }
 
 const encryptMessage = function(){
@@ -101,18 +110,19 @@ activeKeyTextBox.addEventListener("keyup", function() {
 });
 
 autoDecryptCheckbox.addEventListener("change", function() {
+    updateAutoDecrypt(autoDecryptCheckbox.checked);
+    updateAutoDecryptUI();
+});
+
+elevatePerms.addEventListener("click", function() {
     chrome.permissions.request({
         permissions: ["tabs"],
         origins: ["*://*/*"]
     }, function(granted) {
         if (granted) {
-            updateAutoDecrypt(autoDecryptCheckbox.checked);
-            updateAutoDecryptUI();
-        } else {
-            autoDecryptCheckbox.checked = false;
+            enableAutoDecryptOption();
         }
     });
-    
 });
 
 encryptTitleCell.addEventListener("click", function() {
@@ -198,6 +208,15 @@ fontColorSelector.addEventListener("change", function(){
 });
 
 // Initialize
+chrome.permissions.contains({
+    permissions: ["tabs"],
+    origins: ["*://*/*"]
+}, function(result) {
+    if(result){
+        enableAutoDecryptOption();
+    }
+});
+
 chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
     chrome.runtime.sendMessage({
         messageType: "activateExtension",

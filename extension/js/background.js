@@ -74,10 +74,10 @@ chrome.contextMenus.onClicked.addListener(function(info, tab) {
 
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo ,tab) {
     chrome.permissions.contains({
-        permissions: ['tabs'],
-        origins: ['http://www.google.com/']
+        permissions: ["tabs"],
+        origins: ["*://*/*"]
     }, function(result) {
-        if (result && changeInfo.status == "complete") {
+        if (result && changeInfo.status === "complete") {
             activateExtension(tabId);
         }
     });

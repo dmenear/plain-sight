@@ -22,10 +22,11 @@
             <tr>
                 <td style="text-align: center;" colspan="2">
                     <br />
-                    <input type="checkbox" id="chkAutoDecrypt" name="autoDecrypt" />
-                    <label for="autoDecrypt">Automatically decrypt page using active key</label>
+                    <input disabled type="checkbox" id="chkAutoDecrypt" name="autoDecrypt" />
+                    <label style="color: lightgray;" id="lblAutoDecrypt" for="autoDecrypt">Automatically decrypt pages</label>
                 </td>
             </tr>
+            <tr id="elevatePermsRow"><td style="text-align: center;" colspan="2"><a id="elevatePerms" href="#">(requires elevated permissions)</a></td></tr>
             <tr>
                 <td style="text-align: right; padding-top: 7px;">
                     <label style="padding-right: 5px;" for="hightlightColor">Highlight Color</label><input type="color" value="#000000" id="hightlightColor" name="hightlightColor" />
