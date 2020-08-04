@@ -2,6 +2,7 @@ const activeKeyTextBox = document.getElementById("plainSightActiveKey");
 const encryptButton = document.getElementById("btnEncrypt");
 const decryptButton = document.getElementById("btnDecrypt");
 const pageDecryptButton = document.getElementById("btnDecryptPage");
+const pageRevertButton = document.getElementById("btnRevertPage");
 const toEncryptTextArea = document.getElementById("txtAreaToEncrypt");
 const encryptedTextArea = document.getElementById("txtAreaEncrypted");
 const toDecryptTextArea = document.getElementById("txtAreaToDecrypt");
@@ -119,6 +120,18 @@ pageDecryptButton.addEventListener("click", function() {
                 console.log("PlainSight: Content scripts are not injected in active tab.");
             } else{
                 console.log("PlainSight: Page decryption complete.");
+            }
+        });
+    });
+});
+
+pageRevertButton.addEventListener("click", function() {
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+        chrome.tabs.sendMessage(tabs[0].id, {messageType: "revertPage"}, function(tabs){
+            if(chrome.runtime.lastError){
+                console.log("PlainSight: Content scripts are not injected in active tab.");
+            } else{
+                console.log("PlainSight: Revert page complete.");
             }
         });
     });

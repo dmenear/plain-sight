@@ -47,9 +47,22 @@ const reprocessMessages = function(){
     }
 }
 
+const revertPage = function(){
+    var decryptedMessageTags = document.getElementsByClassName("psDecryptedMessage");
+    for(var i = decryptedMessageTags.length - 1; i >= 0; i--){
+        messageTag = decryptedMessageTags[i];
+        var encryptedText = messageTag.getAttribute("data-ps-encrypted");
+        var originalValue = "443{" + encryptedText + "}336";
+        messageTag.parentNode.replaceChild(document.createTextNode(originalValue), messageTag);
+    }
+}
+
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
     if(request.messageType === "fullDecrypt"){
         decryptMessages(true);
+        sendResponse({message: "success"});
+    } else if(request.messageType === "revertPage"){
+        revertPage();
         sendResponse({message: "success"});
     } else if(request.messageType === "updatedAutoDecrypt"){
         autoDecrypt = request.newValue;
@@ -60,9 +73,11 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
     } else if(request.messageType === "updatedHightlightColor"){
         hightlightColor = request.newValue;
         updateColors();
+        sendResponse({message: "success"});
     } else if(request.messageType === "updatedFontColor"){
         fontColor = request.newValue;
         updateColors();
+        sendResponse({message: "success"});
     }
 });
 
