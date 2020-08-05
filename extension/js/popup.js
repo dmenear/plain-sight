@@ -183,15 +183,6 @@ fontColorSelector.addEventListener("change", function(){
 });
 
 // Initialize
-chrome.permissions.contains({
-    permissions: ["tabs"],
-    origins: ["*://*/*"]
-}, function(result) {
-    if(result){
-        enableAutoDecryptOption();
-    }
-});
-
 chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
     chrome.runtime.sendMessage({
         messageType: "activateExtension",
