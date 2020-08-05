@@ -190,6 +190,13 @@ chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
     });
 });
 
+if(navigator.userAgent.search("Firefox") >= 0){
+    var colorSelectionRows = document.getElementsByClassName("colorSelection");
+    for(let row of colorSelectionRows){
+        row.style.display = "none";
+    }
+}
+
 chrome.storage.sync.get(["activeKey"], function(result){
     activeKeyTextBox.value = typeof result["activeKey"] !== "undefined" ? result["activeKey"] : "";
 });

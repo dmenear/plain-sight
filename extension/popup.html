@@ -33,7 +33,7 @@
                         <label id="lblAutoDecrypt" for="autoDecrypt">Automatically Decrypt</label>
                     </td>
                 </tr>
-                <tr>
+                <tr class="colorSelection">
                     <td style="text-align: right; padding-top: 7px;">
                         <label style="padding-right: 5px;" for="colorPicker">Highlight Color</label><input type="color" value="#000000" id="hightlightColor" name="hightlightColor" />
                     </td>
@@ -41,7 +41,7 @@
                         <input type="color" value="#00ff00" id="fontColor" name="fontColor" /><label style="padding-left: 5px;" for="fontColor">Font Color</label>
                     </td>
                 </tr>
-                <tr>
+                <tr class="colorSelection">
                     <td style="padding-top: 5px; text-align: center;" colspan="2">
                         <span id="sampleDecrypted">Decrypted Message</span>
                     </td>
@@ -57,14 +57,14 @@
             </tr>
         </table>
         <table id="encryptForm">
-            <tr><td><textarea id="txtAreaToEncrypt"></textarea></td></tr>
-            <tr><td><span id="btnWrapper"><button id="btnEncrypt">Encrypt</button></span></td></tr>
-            <tr><td><textarea spellcheck="false" readonly id="txtAreaEncrypted"></textarea></td></tr>
+            <tr><td class="alignCenter"><textarea id="txtAreaToEncrypt"></textarea></td></tr>
+            <tr><td class="alignCenter"><button id="btnEncrypt">Encrypt</button></td></tr>
+            <tr><td class="alignCenter"><textarea spellcheck="false" readonly id="txtAreaEncrypted"></textarea></td></tr>
         </table>
         <table id="decryptForm">
-            <tr><td><textarea spellcheck="false" id="txtAreaToDecrypt"></textarea></td></tr>
-            <tr><td><span id="btnWrapper"><button id="btnDecrypt">Decrypt</button></span></td></tr>
-            <tr><td><textarea readonly id="txtAreaDecrypted"></textarea></td></tr>
+            <tr><td class="alignCenter"><textarea spellcheck="false" id="txtAreaToDecrypt"></textarea></td></tr>
+            <tr><td class="alignCenter"><button id="btnDecrypt">Decrypt</button></td></tr>
+            <tr><td class="alignCenter"><textarea readonly id="txtAreaDecrypted"></textarea></td></tr>
         </table>
         
         <script src="js/sha256.min.js"></script>

@@ -1,3 +1,8 @@
+body {
+    font-family: "Segoe UI", Tahoma, sans-serif;
+    font-size: 75%;
+}
+
 button {
     padding: 3px;
     margin: 0;
@@ -22,6 +27,18 @@ textarea {
     height: 125px;
     resize: none;
     margin: 5px;
+}
+
+.alignLeft {
+    text-align: left;
+}
+
+.alignRight {
+    text-align: right;
+}
+
+.alignCenter {
+    text-align: center;
 }
 
 #activeKeyCell {
