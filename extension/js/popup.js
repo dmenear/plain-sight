@@ -91,6 +91,16 @@ const updateAutoDecryptUI = function(){
     }
 }
 
+const sendMessageToActiveTab = function(messageType){
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+        chrome.tabs.sendMessage(tabs[0].id, {messageType: messageType}, function(tabs){
+            if(chrome.runtime.lastError){
+                console.log("PlainSight: Content scripts are not injected in active tab.");
+            }
+        });
+    }); 
+}
+
 // Event listeners
 document.body.addEventListener("keydown", function(event){
     if(event.keyCode == 16){
@@ -152,27 +162,11 @@ decryptButton.addEventListener("click", function(){
 });
 
 pageDecryptButton.addEventListener("click", function() {
-    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-        chrome.tabs.sendMessage(tabs[0].id, {messageType: "fullDecrypt"}, function(tabs){
-            if(chrome.runtime.lastError){
-                console.log("PlainSight: Content scripts are not injected in active tab.");
-            } else{
-                console.log("PlainSight: Page decryption complete.");
-            }
-        });
-    });
+    sendMessageToActiveTab("fullDecrypt");
 });
 
 pageRevertButton.addEventListener("click", function() {
-    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-        chrome.tabs.sendMessage(tabs[0].id, {messageType: "revertPage"}, function(tabs){
-            if(chrome.runtime.lastError){
-                console.log("PlainSight: Content scripts are not injected in active tab.");
-            } else{
-                console.log("PlainSight: Revert page complete.");
-            }
-        });
-    });
+    sendMessageToActiveTab("revertPage");
 });
 
 toEncryptTextArea.addEventListener("keyup", function(){
