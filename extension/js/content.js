@@ -9,8 +9,17 @@ const mutationObserved = function(mutations, observer){
     }
 }
 
+const escapeHTML = function(unsafe) {
+    return unsafe
+         .replace(/&/g, "&amp;")
+         .replace(/</g, "&lt;")
+         .replace(/>/g, "&gt;")
+         .replace(/"/g, "&quot;")
+         .replace(/'/g, "&#039;");
+ }
+
 const tagDecryptedMessage = function(encryptedMessage, decryptedMessage){
-    return "<span title='Decrypted by PlainSight' class='psDecryptedMessage' data-ps-encrypted='" + encryptedMessage + "'>" + decryptedMessage + "</span>";
+    return "<span title='Decrypted by PlainSight' class='psDecryptedMessage' data-ps-encrypted='" + encryptedMessage + "'>" + escapeHTML(decryptedMessage) + "</span>";
 }
 
 const decryptMessages = function(fullDecrypt){
@@ -58,13 +67,8 @@ const revertPage = function(){
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
     if(request.messageType === "fullDecrypt"){
-        if(!autoDecrypt){
-            decryptMessages(true);
-            sendResponse({message: "success"});
-        } else{
-            alert("PlainSight: Cannot manually decrypt page when automatic decryption is enabled!");
-            sendResponse({message: "failure"});
-        }
+        decryptMessages(true);
+        sendResponse({message: "success"});
     } else if(request.messageType === "revertPage"){
         if(!autoDecrypt){
             revertPage();
@@ -111,3 +115,7 @@ chrome.storage.sync.get(["fontColor"], function(result){
 
 const observer = new MutationObserver(mutationObserved);
 observer.observe(document.body, mutationObserverConfig);
+
+chrome.runtime.sendMessage({
+    messageType: "extensionActivated"
+});

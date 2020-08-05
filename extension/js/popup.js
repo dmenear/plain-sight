@@ -19,8 +19,6 @@ const hightlightColorSelector = document.getElementById("hightlightColor");
 const fontColorSelector = document.getElementById("fontColor");
 const sampleDecryptedText = document.getElementById("sampleDecrypted");
 const autoDecryptLabel = document.getElementById("lblAutoDecrypt");
-const elevatePermsCell = document.getElementById("elevatePermsCell");
-const elevatePerms = document.getElementById("elevatePerms");
 
 // Variables
 var shiftPressed = false;
@@ -46,12 +44,6 @@ const updateContentValue = function(key, value, messageType){
             });
         });
     });
-}
-
-const enableAutoDecryptOption = function(){
-    elevatePermsCell.style.display = "none";
-    autoDecryptLabel.style.color = "black";
-    autoDecryptCheckbox.disabled = false;
 }
 
 const encryptMessage = function(){
@@ -93,7 +85,7 @@ const updateAutoDecryptUI = function(){
 
 const sendMessageToActiveTab = function(messageType){
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-        chrome.tabs.sendMessage(tabs[0].id, {messageType: messageType}, function(tabs){
+        chrome.tabs.sendMessage(tabs[0].id, {messageType: messageType}, function(){
             if(chrome.runtime.lastError){
                 console.log("PlainSight: Content scripts are not injected in active tab.");
             }
@@ -122,17 +114,6 @@ activeKeyTextBox.addEventListener("keyup", function() {
 autoDecryptCheckbox.addEventListener("change", function() {
     updateAutoDecrypt(autoDecryptCheckbox.checked);
     updateAutoDecryptUI();
-});
-
-elevatePerms.addEventListener("click", function() {
-    chrome.permissions.request({
-        permissions: ["tabs"],
-        origins: ["*://*/*"]
-    }, function(granted) {
-        if (granted) {
-            enableAutoDecryptOption();
-        }
-    });
 });
 
 encryptTitleCell.addEventListener("click", function() {

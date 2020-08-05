@@ -1,7 +1,9 @@
 const cssToInject = ["css/content.css"];
 const scriptsToInject = ["js/sha256.min.js", "js/aes.js", "js/cryptofunctions.js", "js/common.js", "js/content.js"];
 
-const activateExtension = function(tabId){
+var queuedCommand = "";
+
+const activateExtensionAndRunCommand = function(tabId, contextCommand){
     chrome.tabs.sendMessage(tabId, {messageType: "heartbeat"}, function(){
         if(chrome.runtime.lastError){
             console.log("PlainSight: Injecting content scripts and CSS");
@@ -26,71 +28,57 @@ const activateExtension = function(tabId){
                     }
                 });
             }
-            return true;
+            if(contextCommand !== null){
+                queuedCommand = contextCommand;
+            }
         } else{
-            return false;
+            if(contextCommand !== null){
+                processContextCommand(contextCommand);
+            }
         }
-    })
+    });
+}
+
+const sendMessageToActiveTab = function(messageType){
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+        chrome.tabs.sendMessage(tabs[0].id, {messageType: messageType}, function(){
+            if(chrome.runtime.lastError){
+                console.log("PlainSight: Content scripts are not injected in active tab.");
+            }
+        });
+    });
+}
+
+const processContextCommand = function(command){
+    if (command == "force-decrypt") {
+        sendMessageToActiveTab("fullDecrypt");
+    }
 }
 
 chrome.runtime.onInstalled.addListener(function() {
     chrome.contextMenus.create({
         id: "force-decrypt",
-        title: "Decrypt page",
+        title: "Decrypt Page",
     });
 
-    chrome.contextMenus.create({
-        id: "revert-page",
-        title: "Revert page",
-    });
-
-
-    chrome.storage.sync.set({"autoDecrypt": false});
+    chrome.storage.sync.set({"autoDecrypt": true});
     chrome.storage.sync.set({"highlightColor": "#000000"});
     chrome.storage.sync.set({"fontColor": "#00ff00"});
 });
 
 chrome.contextMenus.onClicked.addListener(function(info, tab) {
-    if(activateExtension(tab.id)){
-        return;
-    }
-    if (info.menuItemId == "force-decrypt") {
-        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-            chrome.tabs.sendMessage(tabs[0].id, {messageType: "fullDecrypt"}, function(tabs){
-                if(chrome.runtime.lastError){
-                    console.log("PlainSight: Content scripts are not injected in active tab.");
-                } else{
-                    console.log("PlainSight: Page decryption complete.");
-                }
-            });
-        });
-    } else if (info.menuItemId == "revert-page") {
-        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-            chrome.tabs.sendMessage(tabs[0].id, {messageType: "revertPage"}, function(tabs){
-                if(chrome.runtime.lastError){
-                    console.log("PlainSight: Content scripts are not injected in active tab.");
-                } else{
-                    console.log("PlainSight: Page revert complete.");
-                }
-            });
-        });
-    }
-});
-
-chrome.tabs.onUpdated.addListener(function(tabId, changeInfo ,tab) {
-    chrome.permissions.contains({
-        permissions: ["tabs"],
-        origins: ["*://*/*"]
-    }, function(result) {
-        if (result && changeInfo.status === "complete") {
-            activateExtension(tabId);
-        }
-    });
+    activateExtensionAndRunCommand(tab.id, info.menuItemId);
 });
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     if(request.messageType === "activateExtension"){
-        activateExtension(request.tabId);
+        activateExtensionAndRunCommand(request.tabId, null);
         sendResponse("complete");
+    } else if(request.messageType === "extensionActivated"){
+        console.log("PlainSight: Extension activated on active tab.");
+        if(queuedCommand !== ""){
+            processContextCommand(queuedCommand);
+            queuedCommand = "";
+        }
     }
 });
