@@ -1,19 +1,19 @@
 const cssToInject = ["css/content.css"];
-const scriptsToInject = ["js/sha256.min.js", "js/aes.js", "js/cryptofunctions.js", "js/common.js", "js/content.js"];
+const scriptsToInject = ["js/sha256.min.js", "js/aes.js", "js/cryptofunctions.js", "js/common.js", "js/messages.js", "js/content.js"];
 
 var queuedCommand = "";
 
 const activateExtensionAndRunCommand = function(tabId, contextCommand){
     chrome.tabs.sendMessage(tabId, {messageType: "heartbeat"}, function(){
         if(chrome.runtime.lastError){
-            console.log("PlainSight: Injecting content scripts and CSS");
+            console.log(getMessage("injectingFiles"));
 
             for(let stylesheet of cssToInject){
                 chrome.tabs.insertCSS({
                     file: stylesheet
                 }, function(){
                     if(chrome.runtime.lastError){
-                        console.log("PlainSight: Failed to inject CSS stylesheet: " + stylesheet);
+                        console.log(getMessage("stylesheetInjectionFailed") + stylesheet);
                     }
                 });
             }
@@ -24,7 +24,7 @@ const activateExtensionAndRunCommand = function(tabId, contextCommand){
                    allFrames: true 
                 }, function(){
                     if(chrome.runtime.lastError){
-                        console.log("PlainSight: Failed to inject content script: " + script);
+                        console.log(getMessage("scriptInjectionFailed") + script);
                     }
                 });
             }
@@ -43,7 +43,7 @@ const sendMessageToActiveTab = function(messageType){
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
         chrome.tabs.sendMessage(tabs[0].id, {messageType: messageType}, function(){
             if(chrome.runtime.lastError){
-                console.log("PlainSight: Content scripts are not injected in active tab.");
+                console.log(getMessage("extensionInactive"));
             }
         });
     });
@@ -75,7 +75,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         activateExtensionAndRunCommand(request.tabId, null);
         sendResponse("complete");
     } else if(request.messageType === "extensionActivated"){
-        console.log("PlainSight: Extension activated on active tab.");
+        console.log(getMessage("extensionActivated"));
         if(queuedCommand !== ""){
             processContextCommand(queuedCommand);
             queuedCommand = "";

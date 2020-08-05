@@ -74,7 +74,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
             revertPage();
             sendResponse({message: "success"});
         } else{
-            alert("PlainSight: Cannot revert page when automatic decryption is enabled!");
+            alert(getMessage("revertPageFailed"));
             sendResponse({message: "failure"});
         }  
     } else if(request.messageType === "updatedAutoDecrypt"){
