@@ -1,9 +1,5 @@
 var activeKey;
 
-chrome.storage.sync.get(["activeKey"], function(result){
-    activeKey = result["activeKey"];
-});
-
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
     if(request.messageType === "updatedKey"){
         activeKey = request.newValue;
@@ -14,6 +10,15 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
         }
     }
 });
+
+const getActiveKey = function(callback){
+    chrome.storage.sync.get(["activeKey"], function(result){
+        activeKey = result["activeKey"];
+        if(callback != null){
+            callback();
+        }
+    });
+}
 
 const getDecryptedMessage = function(encryptedHex, key){
     return performCryptoOperation(encryptedHex, key, "decrypt");
@@ -55,3 +60,5 @@ const performCryptoOperation = function(inputText, key, operation){
 const get256BitKey = function(key){
     return sha256.array((typeof key !== "undefined" ? key : ""));
 }
+
+getActiveKey(null);

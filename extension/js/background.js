@@ -3,7 +3,7 @@ const scriptsToInject = ["js/sha256.min.js", "js/aes.js", "js/cryptofunctions.js
 
 var queuedCommand = "";
 
-const activateExtensionAndRunCommand = function(tabId, contextCommand){
+const activateExtensionAndRunCommand = function(tabId, command){
     chrome.tabs.sendMessage(tabId, {messageType: "heartbeat"}, function(){
         if(chrome.runtime.lastError){
             console.log(getMessage("injectingFiles"));
@@ -28,12 +28,12 @@ const activateExtensionAndRunCommand = function(tabId, contextCommand){
                     }
                 });
             }
-            if(contextCommand !== null){
-                queuedCommand = contextCommand;
+            if(command !== null){
+                queuedCommand = command;
             }
         } else{
-            if(contextCommand !== null){
-                processContextCommand(contextCommand);
+            if(command !== null){
+                processCommand(command);
             }
         }
     });
@@ -49,9 +49,11 @@ const sendMessageToActiveTab = function(messageType){
     });
 }
 
-const processContextCommand = function(command){
+const processCommand = function(command){
     if (command == "force-decrypt") {
         sendMessageToActiveTab("fullDecrypt");
+    } else if(command == "reprocess"){
+        sendMessageToActiveTab("reprocess");
     }
 }
 
@@ -72,12 +74,12 @@ chrome.contextMenus.onClicked.addListener(function(info, tab) {
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     if(request.messageType === "activateExtension"){
-        activateExtensionAndRunCommand(request.tabId, null);
+        activateExtensionAndRunCommand(request.tabId, "reprocess");
         sendResponse("complete");
     } else if(request.messageType === "extensionActivated"){
         console.log(getMessage("extensionActivated"));
         if(queuedCommand !== ""){
-            processContextCommand(queuedCommand);
+            processCommand(queuedCommand);
             queuedCommand = "";
         }
     }
