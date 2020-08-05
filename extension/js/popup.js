@@ -19,7 +19,7 @@ const hightlightColorSelector = document.getElementById("hightlightColor");
 const fontColorSelector = document.getElementById("fontColor");
 const sampleDecryptedText = document.getElementById("sampleDecrypted");
 const autoDecryptLabel = document.getElementById("lblAutoDecrypt");
-const elevatePermsRow = document.getElementById("elevatePermsRow");
+const elevatePermsCell = document.getElementById("elevatePermsCell");
 const elevatePerms = document.getElementById("elevatePerms");
 
 // Variables
@@ -49,7 +49,7 @@ const updateContentValue = function(key, value, messageType){
 }
 
 const enableAutoDecryptOption = function(){
-    elevatePermsRow.style.display = "none";
+    elevatePermsCell.style.display = "none";
     autoDecryptLabel.style.color = "black";
     autoDecryptCheckbox.disabled = false;
 }
