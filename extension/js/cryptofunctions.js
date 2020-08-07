@@ -1,19 +1,21 @@
+const FAILED_DECRYPTION = "[[PS: message decryption failed]]";
+const FAILED_ENCRYPTION = "[[PS: message encryption failed]]";
 var activeKey;
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
-    if(request.messageType === "updatedKey"){
+    if(request.messageType === MT_UPDATED_KEY){
         activeKey = request.newValue;
-        sendResponse({message: "success"});
         if(typeof reprocessMessages !== "undefined"){
-            console.log("PlainSight: Key updated, reprocessing messages");
+            console.log(getMessage(MSG_KEY_KEY_UPDATE_REPROCESS));
             reprocessMessages();
         }
+        sendResponse(MSG_OBJ_SUCCESS);
     }
 });
 
 const getActiveKey = function(callback){
-    chrome.storage.sync.get(["activeKey"], function(result){
-        activeKey = result["activeKey"];
+    chrome.storage.sync.get([STKEY_ACTIVE_KEY], function(result){
+        activeKey = result[STKEY_ACTIVE_KEY];
         if(callback != null){
             callback();
         }
@@ -34,12 +36,12 @@ const performCryptoOperation = function(inputText, key, operation){
     }
     let key_256 = get256BitKey(key);
     try{
-        let aesCtr = new aesjs.ModeOfOperation.ctr(key_256, new aesjs.Counter(counterVal));
+        let aesCtr = new aesjs.ModeOfOperation.ctr(key_256, new aesjs.Counter(COUNTER_VAL));
         if(operation === "encrypt"){
             let inputBytes = aesjs.utils.utf8.toBytes(inputText);
             let encryptedBytes = aesCtr.encrypt(inputBytes);
             let encryptedHex = aesjs.utils.hex.fromBytes(encryptedBytes);
-            return "443{" + encryptedHex + "}336";
+            return ENC_PREFIX + encryptedHex + ENC_SUFFIX;
         } else{
             let inputBytes = aesjs.utils.hex.toBytes(inputText);
             let decryptedBytes = aesCtr.decrypt(inputBytes);
@@ -49,9 +51,9 @@ const performCryptoOperation = function(inputText, key, operation){
     } catch(err){
         console.log(err);
         if(operation === "encrypt"){
-            return failedEncryption;
+            return FAILED_ENCRYPTION;
         } else{
-            return failedDecryption;
+            return FAILED_DECRYPTION;
         }
         
     }

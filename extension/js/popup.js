@@ -23,11 +23,11 @@ var shiftPressed = false;
 
 // Functions
 const updateKey = function(newValue){
-    updateContentValue("activeKey", newValue, "updatedKey");
+    updateContentValue(STKEY_ACTIVE_KEY, newValue, MT_UPDATED_KEY);
 }
 
 const updateAutoDecrypt = function(newValue){
-    updateContentValue("autoDecrypt", newValue, "updatedAutoDecrypt");
+    updateContentValue(STKEY_AUTO_DECRYPT, newValue, MT_UPDATED_AUTO_DECRYPT);
 }
 
 const updateContentValue = function(key, value, messageType){
@@ -35,9 +35,9 @@ const updateContentValue = function(key, value, messageType){
         chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
             chrome.tabs.sendMessage(tabs[0].id, {messageType: messageType, newValue: value}, function(response){
                 if(chrome.runtime.lastError){
-                    console.log(getMessage("contentUpdateFail"));
+                    console.log(getMessage(MSG_KEY_CONTENT_UPDATE_FAIL));
                 } else{
-                    console.log(getMessage("contentUpdateSuccess") + response.message);
+                    console.log(getMessage(MSG_KEY_CONTENT_UPDATE_SUCCESS) + response.message);
                 }
             });
         });
@@ -45,7 +45,7 @@ const updateContentValue = function(key, value, messageType){
 }
 
 const encryptMessage = function(){
-    let encryptText = document.getElementById("txtAreaToEncrypt").value;
+    let encryptText = toEncryptTextArea.value;
     if(encryptText.length > 0){
         encryptedTextArea.value = getEncryptedMessage(encryptText, activeKeyTextBox.value);
         encryptedTextArea.select();
@@ -56,9 +56,9 @@ const encryptMessage = function(){
 }
 
 const decryptMessage = function(){
-    let decryptText = document.getElementById("txtAreaToDecrypt").value;
-    if(decryptText.search(msgPattern) >= 0){
-        let match = msgPattern.exec(decryptText);
+    let decryptText = toDecryptTextArea.value;
+    if(decryptText.search(MSG_PATTERN) >= 0){
+        let match = MSG_PATTERN.exec(decryptText);
         decryptedTextArea.value = getDecryptedMessage(match[1], activeKeyTextBox.value);
         decryptedTextArea.focus();
     }
@@ -86,16 +86,6 @@ const updateAutoDecryptUI = function(){
     }
 }
 
-const sendMessageToActiveTab = function(messageType){
-    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-        chrome.tabs.sendMessage(tabs[0].id, {messageType: messageType}, function(){
-            if(chrome.runtime.lastError){
-                console.log(getMessage("extensionInactive"));
-            }
-        });
-    }); 
-}
-
 const updateTextAreasBackgroundColor = function(newColor){
     let textAreas = document.getElementsByTagName("TEXTAREA");
     for(let textArea of textAreas){
@@ -115,7 +105,7 @@ const highlightColorInput = function(){
 }
 
 const highlightColorChange = function(){
-    updateContentValue("highlightColor", this.toHEXString(), "updatedHightlightColor");
+    updateContentValue(STKEY_HIGHLIGHT_COLOR, this.toHEXString(), MT_UPDATED_HIGHLIGHT_COLOR);
     updateTextAreasBackgroundColor(this.toHEXString());
 }
 
@@ -124,7 +114,7 @@ const fontColorInput = function(){
 }
 
 const fontColorChange = function(){
-    updateContentValue("fontColor", this.toHEXString(), "updatedFontColor");
+    updateContentValue(STKEY_FONT_COLOR, this.toHEXString(), MT_UPDATED_FONT_COLOR);
     updateTextAreasFontColor(this.toHEXString());
 }
 
@@ -182,11 +172,11 @@ decryptButton.addEventListener("click", function(){
 });
 
 pageDecryptButton.addEventListener("click", function() {
-    sendMessageToActiveTab("fullDecrypt");
+    sendMessageToActiveTab(MT_DECRYPT_PAGE);
 });
 
 pageRevertButton.addEventListener("click", function() {
-    sendMessageToActiveTab("revertPage");
+    sendMessageToActiveTab(MT_REVERT_PAGE);
 });
 
 toEncryptTextArea.addEventListener("keyup", function(){
@@ -220,30 +210,33 @@ fontColorPicker.option("width", 120);
 fontColorPicker.option("onInput", fontColorInput);
 fontColorPicker.option("onChange", fontColorChange);
 
-chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-    chrome.runtime.sendMessage({
-        messageType: "activateExtension",
-        tabId: tabs[0].id
-    });
+chrome.storage.sync.get([STKEY_ACTIVE_KEY], function(result){
+    activeKeyTextBox.value = result[STKEY_ACTIVE_KEY];
 });
 
-chrome.storage.sync.get(["activeKey"], function(result){
-    activeKeyTextBox.value = typeof result["activeKey"] !== "undefined" ? result["activeKey"] : "";
-});
-
-chrome.storage.sync.get(["autoDecrypt"], function(result){
-    autoDecryptCheckbox.checked = result["autoDecrypt"];
+chrome.storage.sync.get([STKEY_AUTO_DECRYPT], function(result){
+    autoDecryptCheckbox.checked = result[STKEY_AUTO_DECRYPT];
     updateAutoDecryptUI();
 });
 
-chrome.storage.sync.get(["highlightColor"], function(result){
-    highlightColorPicker.fromString(result["highlightColor"]);
-    sampleDecryptedText.style.backgroundColor = result["highlightColor"];
-    updateTextAreasBackgroundColor(result["highlightColor"]);
+chrome.storage.sync.get([STKEY_HIGHLIGHT_COLOR], function(result){
+    let highlightColor = result[STKEY_HIGHLIGHT_COLOR];
+    highlightColorPicker.fromString(highlightColor);
+    sampleDecryptedText.style.backgroundColor = highlightColor;
+    updateTextAreasBackgroundColor(highlightColor);
 });
 
-chrome.storage.sync.get(["fontColor"], function(result){
-    fontColorPicker.fromString(result["fontColor"]);
-    sampleDecryptedText.style.color = result["fontColor"];
-    updateTextAreasFontColor(result["fontColor"]);
+chrome.storage.sync.get([STKEY_FONT_COLOR], function(result){
+    let fontColor = result[STKEY_FONT_COLOR];
+    fontColorPicker.fromString(fontColor);
+    sampleDecryptedText.style.color = fontColor;
+    updateTextAreasFontColor(fontColor);
+});
+
+chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+    chrome.runtime.sendMessage({messageType: MT_ACTIVATE_EXTENSION, tabId: tabs[0].id}, function(){
+        if(chrome.runtime.lastError){
+            console.log(getMessage(MSG_KEY_EXTENSION_ACTIVATION_FAILED));
+        }
+    });
 });

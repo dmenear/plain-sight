@@ -1,30 +1,34 @@
-const cssToInject = ["css/content.css"];
-const scriptsToInject = ["js/sha256.min.js", "js/aes.js", "js/cryptofunctions.js", "js/common.js", "js/messages.js", "js/content.js"];
+const STYLESHEETS_TO_INJECT = ["css/content.css"];
+const SCRIPTS_TO_INJECT = ["js/sha256.min.js", "js/aes.js", "js/common.js", "js/messages.js", "js/cryptofunctions.js", "js/content.js"];
+const DEFAULT_KEY = "plainsight";
+const DEFAULT_AUTO_ENCRYPT = true;
+const DEFAULT_HIGHLIGHT_COLOR = "#1F1F1F";
+const DEFAULT_FONT_COLOR = "#00ff00";
 
 var queuedCommand = "";
 
 const activateExtensionAndRunCommand = function(tabId, command){
-    chrome.tabs.sendMessage(tabId, {messageType: "heartbeat"}, function(){
+    chrome.tabs.sendMessage(tabId, {messageType: MT_HEARTBEAT}, function(){
         if(chrome.runtime.lastError){
-            console.log(getMessage("injectingFiles"));
+            console.log(getMessage(MSG_KEY_INJECTING_FILES));
 
-            for(let stylesheet of cssToInject){
+            for(let stylesheet of STYLESHEETS_TO_INJECT){
                 chrome.tabs.insertCSS({
                     file: stylesheet
                 }, function(){
                     if(chrome.runtime.lastError){
-                        console.log(getMessage("stylesheetInjectionFailed") + stylesheet);
+                        console.log(getMessage(MSG_KEY_STYLESHEET_INJECTION_FAILED) + stylesheet);
                     }
                 });
             }
             
-            for(let script of scriptsToInject){
+            for(let script of SCRIPTS_TO_INJECT){
                 chrome.tabs.executeScript({
                    file: script,
                    allFrames: true 
                 }, function(){
                     if(chrome.runtime.lastError){
-                        console.log(getMessage("scriptInjectionFailed") + script);
+                        console.log(getMessage(MSG_KEY_SCRIPT_INJECTION_FAILED) + script);
                     }
                 });
             }
@@ -39,43 +43,34 @@ const activateExtensionAndRunCommand = function(tabId, command){
     });
 }
 
-const sendMessageToActiveTab = function(messageType){
-    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-        chrome.tabs.sendMessage(tabs[0].id, {messageType: messageType}, function(){
-            if(chrome.runtime.lastError){
-                console.log(getMessage("extensionInactive"));
-            }
-        });
-    });
-}
-
 const processCommand = function(command){
-    if (command == "fullDecrypt") {
-        sendMessageToActiveTab("fullDecrypt");
-    } else if (command == "revertPage") {
-        sendMessageToActiveTab("revertPage");
-    }  else if(command == "reprocess"){
-        sendMessageToActiveTab("reprocess");
-    } else if(command == "encryptSelectedInput"){
-        sendMessageToActiveTab("encryptSelectedInput");
+    if (command == COMMAND_DECRYPT_PAGE) {
+        sendMessageToActiveTab(MT_DECRYPT_PAGE);
+    } else if (command == COMMAND_REVERT_PAGE) {
+        sendMessageToActiveTab(MT_REVERT_PAGE);
+    } else if(command == COMMAND_REPROCESS){
+        sendMessageToActiveTab(MT_REPROCESS);
+    } else if(command == COMMAND_ENCRYPT_INPUT){
+        sendMessageToActiveTab(MT_ENCRYPT_INPUT);
     }
 }
 
 chrome.runtime.onInstalled.addListener(function() {
     chrome.contextMenus.create({
-        id: "fullDecrypt",
+        id: COMMAND_DECRYPT_PAGE,
         title: "Decrypt Page",
     });
 
     chrome.contextMenus.create({
-        id: "encryptSelectedInput",
+        id: COMMAND_ENCRYPT_INPUT,
         title: "Encrypt Selection",
         contexts: ["selection"]
     });
 
-    chrome.storage.sync.set({"autoDecrypt": true});
-    chrome.storage.sync.set({"highlightColor": "#1F1F1F"});
-    chrome.storage.sync.set({"fontColor": "#00ff00"});
+    chrome.storage.sync.set({[STKEY_ACTIVE_KEY]: DEFAULT_KEY});
+    chrome.storage.sync.set({[STKEY_AUTO_DECRYPT]: DEFAULT_AUTO_ENCRYPT});
+    chrome.storage.sync.set({[STKEY_HIGHLIGHT_COLOR]: DEFAULT_HIGHLIGHT_COLOR});
+    chrome.storage.sync.set({[STKEY_FONT_COLOR]: DEFAULT_FONT_COLOR});
 });
 
 chrome.contextMenus.onClicked.addListener(function(info, tab) {
@@ -84,18 +79,18 @@ chrome.contextMenus.onClicked.addListener(function(info, tab) {
 
 chrome.commands.onCommand.addListener(function(command) {
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-        if(command == "encryptSelectedInput" || command == "fullDecrypt" || command == "revertPage"){
+        if([COMMAND_DECRYPT_PAGE, COMMAND_REVERT_PAGE, COMMAND_ENCRYPT_INPUT].includes(command)){
             activateExtensionAndRunCommand(tabs[0].id, command);
         }
     });
 });
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-    if(request.messageType === "activateExtension"){
-        activateExtensionAndRunCommand(request.tabId, "reprocess");
-        sendResponse("complete");
-    } else if(request.messageType === "extensionActivated"){
-        console.log(getMessage("extensionActivated"));
+    if(request.messageType === MT_ACTIVATE_EXTENSION){
+        activateExtensionAndRunCommand(request.tabId, COMMAND_REPROCESS);
+        sendResponse(MSG_OBJ_SUCCESS);
+    } else if(request.messageType === MT_EXTENSION_ACTIVATED){
+        console.log(getMessage(MSG_KEY_EXTENSION_ACTIVATED));
         if(queuedCommand !== ""){
             processCommand(queuedCommand);
             queuedCommand = "";

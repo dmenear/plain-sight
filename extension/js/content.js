@@ -15,7 +15,7 @@ const mutationObserved = function(mutations, observer){
 }
 
 const tagDecryptedMessage = function(encryptedMessage, decryptedMessage){
-    return "<span title='Decrypted by PlainSight' class='psDecryptedMessage' data-ps-encrypted='" + encryptedMessage + "'>" + escapeHTML(decryptedMessage) + "</span>";
+    return "<span title='Decrypted by PlainSight' class='" + CLASS_DECRYPTED_MESSAGE + "' " + ATTR_ENCRYPTED_MESSAGE + "='" + encryptedMessage + "'>" + escapeHTML(decryptedMessage) + "</span>";
 }
 
 const decryptMessages = function(rootElement){
@@ -23,11 +23,11 @@ const decryptMessages = function(rootElement){
         let allElements = rootElement.getElementsByTagName("*");
         for(let element of allElements){
             for(let node of element.childNodes){
-                if(node.nodeType === 3 && node.nodeValue.search(msgPattern) >= 0 && !node.parentElement.isContentEditable){
+                if(node.nodeType === 3 && node.nodeValue.search(MSG_PATTERN) >= 0 && !node.parentElement.isContentEditable){
                     let parentElement = node.parentElement;
-                    while(parentElement.innerHTML.search(msgPattern) >= 0){
-                        let match = msgPattern.exec(parentElement.innerHTML);
-                        parentElement.innerHTML = parentElement.innerHTML.replace(msgPattern, tagDecryptedMessage(match[1], getDecryptedMessage(match[1], null)));
+                    while(parentElement.innerHTML.search(MSG_PATTERN) >= 0){
+                        let match = MSG_PATTERN.exec(parentElement.innerHTML);
+                        parentElement.innerHTML = parentElement.innerHTML.replace(MSG_PATTERN, tagDecryptedMessage(match[1], getDecryptedMessage(match[1], null)));
                         updateColors();
                     }
                 }
@@ -37,7 +37,7 @@ const decryptMessages = function(rootElement){
 }
 
 const updateColors = function(){
-    let decryptedMessageTags = document.getElementsByClassName("psDecryptedMessage");
+    let decryptedMessageTags = document.getElementsByClassName(CLASS_DECRYPTED_MESSAGE);
     for(let messageTag of decryptedMessageTags){
         messageTag.style.color = fontColor;
         messageTag.style.backgroundColor = hightlightColor;
@@ -45,20 +45,20 @@ const updateColors = function(){
 }
 
 const reprocessMessages = function(){
-    let decryptedMessageTags = document.getElementsByClassName("psDecryptedMessage");
+    let decryptedMessageTags = document.getElementsByClassName(CLASS_DECRYPTED_MESSAGE);
     for(let messageTag of decryptedMessageTags){
-        let encryptedText = messageTag.getAttribute("data-ps-encrypted");
+        let encryptedText = messageTag.getAttribute(ATTR_ENCRYPTED_MESSAGE);
         messageTag.innerHTML = escapeHTML(getDecryptedMessage(encryptedText, null));
         updateColors();
     }
 }
 
 const revertPage = function(){
-    let decryptedMessageTags = document.getElementsByClassName("psDecryptedMessage");
+    let decryptedMessageTags = document.getElementsByClassName(CLASS_DECRYPTED_MESSAGE);
     for(let i = decryptedMessageTags.length - 1; i >= 0; i--){
         messageTag = decryptedMessageTags[i];
-        let encryptedText = messageTag.getAttribute("data-ps-encrypted");
-        let originalValue = "443{" + encryptedText + "}336";
+        let encryptedText = messageTag.getAttribute(ATTR_ENCRYPTED_MESSAGE);
+        let originalValue = ENC_PREFIX + encryptedText + ENC_SUFFIX;
         messageTag.parentNode.replaceChild(document.createTextNode(originalValue), messageTag);
     }
 }
@@ -71,57 +71,57 @@ const encryptSelectedInput = function(){
 }
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
-    if(request.messageType === "fullDecrypt"){
+    if(request.messageType === MT_DECRYPT_PAGE){
         getActiveKey(reprocessMessages);
         getActiveKey(decryptMessages(document.body));
-        sendResponse({message: "success"});
-    } else if(request.messageType === "revertPage"){
+        sendResponse(MSG_OBJ_SUCCESS);
+    } else if(request.messageType === MT_REVERT_PAGE){
         if(!autoDecrypt){
             revertPage();
-            sendResponse({message: "success"});
+            sendResponse(MSG_OBJ_SUCCESS);
         } else{
-            alert(getMessage("revertPageFailed"));
-            sendResponse({message: "failure"});
+            alert(getMessage(MSG_KEY_REVERT_PAGE_FAILED));
+            sendResponse(MSG_OBJ_FAILURE);
         }  
-    } else if(request.messageType === "updatedAutoDecrypt"){
+    } else if(request.messageType === MT_UPDATED_AUTO_DECRYPT){
         autoDecrypt = request.newValue;
         if(autoDecrypt){
             decryptMessages(document.body)();
         }
-        sendResponse({message: "success"});
-    } else if(request.messageType === "updatedHightlightColor"){
+        sendResponse(MSG_OBJ_SUCCESS);
+    } else if(request.messageType === MT_UPDATED_HIGHLIGHT_COLOR){
         hightlightColor = request.newValue;
         updateColors();
-        sendResponse({message: "success"});
-    } else if(request.messageType === "updatedFontColor"){
+        sendResponse(MSG_OBJ_SUCCESS);
+    } else if(request.messageType === MT_UPDATED_FONT_COLOR){
         fontColor = request.newValue;
         updateColors();
-        sendResponse({message: "success"});
-    } else if (request.messageType === "reprocess"){
+        sendResponse(MSG_OBJ_SUCCESS);
+    } else if (request.messageType === MT_REPROCESS){
         getActiveKey(reprocessMessages);
-        sendResponse({message: "success"});
-    } else if(request.messageType === "encryptSelectedInput"){
+        sendResponse(MSG_OBJ_SUCCESS);
+    } else if(request.messageType === MT_ENCRYPT_INPUT){
         encryptSelectedInput();
-        sendResponse({message: "success"});
-    } else if(request.messageType === "heartbeat"){
-        sendResponse({message: "alive"});
+        sendResponse(MSG_OBJ_SUCCESS);
+    } else if(request.messageType === MT_HEARTBEAT){
+        sendResponse(MSG_OBJ_ALIVE);
     }
 });
 
-chrome.storage.sync.get(["autoDecrypt"], function(result){
-    autoDecrypt = result["autoDecrypt"];
+chrome.storage.sync.get([STKEY_AUTO_DECRYPT], function(result){
+    autoDecrypt = result[STKEY_AUTO_DECRYPT];
     if(autoDecrypt){
         decryptMessages(document.body)();
     }
 });
 
-chrome.storage.sync.get(["highlightColor"], function(result){
-    hightlightColor = result["highlightColor"];
+chrome.storage.sync.get([STKEY_HIGHLIGHT_COLOR], function(result){
+    hightlightColor = result[STKEY_HIGHLIGHT_COLOR];
     updateColors();
 });
 
-chrome.storage.sync.get(["fontColor"], function(result){
-    fontColor = result["fontColor"];
+chrome.storage.sync.get([STKEY_FONT_COLOR], function(result){
+    fontColor = result[STKEY_FONT_COLOR];
     updateColors();
 });
 
@@ -129,5 +129,5 @@ const observer = new MutationObserver(mutationObserved);
 observer.observe(document.body, mutationObserverConfig);
 
 chrome.runtime.sendMessage({
-    messageType: "extensionActivated"
+    messageType: MT_EXTENSION_ACTIVATED
 });
