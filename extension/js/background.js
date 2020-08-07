@@ -50,26 +50,44 @@ const sendMessageToActiveTab = function(messageType){
 }
 
 const processCommand = function(command){
-    if (command == "force-decrypt") {
+    if (command == "fullDecrypt") {
         sendMessageToActiveTab("fullDecrypt");
-    } else if(command == "reprocess"){
+    } else if (command == "revertPage") {
+        sendMessageToActiveTab("revertPage");
+    }  else if(command == "reprocess"){
         sendMessageToActiveTab("reprocess");
+    } else if(command == "encryptSelectedInput"){
+        sendMessageToActiveTab("encryptSelectedInput");
     }
 }
 
 chrome.runtime.onInstalled.addListener(function() {
     chrome.contextMenus.create({
-        id: "force-decrypt",
+        id: "fullDecrypt",
         title: "Decrypt Page",
     });
 
+    chrome.contextMenus.create({
+        id: "encryptSelectedInput",
+        title: "Encrypt Selection",
+        contexts: ["selection"]
+    });
+
     chrome.storage.sync.set({"autoDecrypt": true});
-    chrome.storage.sync.set({"highlightColor": "#000000"});
+    chrome.storage.sync.set({"highlightColor": "#1F1F1F"});
     chrome.storage.sync.set({"fontColor": "#00ff00"});
 });
 
 chrome.contextMenus.onClicked.addListener(function(info, tab) {
     activateExtensionAndRunCommand(tab.id, info.menuItemId);
+});
+
+chrome.commands.onCommand.addListener(function(command) {
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+        if(command == "encryptSelectedInput" || command == "fullDecrypt" || command == "revertPage"){
+            activateExtensionAndRunCommand(tabs[0].id, command);
+        }
+    });
 });
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {

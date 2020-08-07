@@ -47,7 +47,7 @@ const updateContentValue = function(key, value, messageType){
 }
 
 const encryptMessage = function(){
-    var encryptText = document.getElementById("txtAreaToEncrypt").value;
+    let encryptText = document.getElementById("txtAreaToEncrypt").value;
     if(encryptText.length > 0){
         encryptedTextArea.value = getEncryptedMessage(encryptText, activeKeyTextBox.value);
         encryptedTextArea.select();
@@ -58,9 +58,9 @@ const encryptMessage = function(){
 }
 
 const decryptMessage = function(){
-    var decryptText = document.getElementById("txtAreaToDecrypt").value;
+    let decryptText = document.getElementById("txtAreaToDecrypt").value;
     if(decryptText.search(msgPattern) >= 0){
-        var match = msgPattern.exec(decryptText);
+        let match = msgPattern.exec(decryptText);
         decryptedTextArea.value = getDecryptedMessage(match[1], activeKeyTextBox.value);
         decryptedTextArea.focus();
     }
@@ -69,6 +69,11 @@ const decryptMessage = function(){
 const resetEncryptTextArea = function(){
     encryptButton.disabled = false;
     encryptButton.innerHTML = "Encrypt";
+    encryptedTextArea.value = "";
+}
+
+const resetDecryptTextArea = function(){
+    decryptedTextArea.value = "";
 }
 
 const updateAutoDecryptUI = function(){
@@ -93,6 +98,20 @@ const sendMessageToActiveTab = function(messageType){
     }); 
 }
 
+const updateTextAreasBackgroundColor = function(newColor){
+    let textAreas = document.getElementsByTagName("TEXTAREA");
+    for(let textArea of textAreas){
+        textArea.style.backgroundColor = newColor;
+    }
+}
+
+const updateTextAreasFontColor = function(newColor){
+    let textAreas = document.getElementsByTagName("TEXTAREA");
+    for(let textArea of textAreas){
+        textArea.style.color = newColor;
+    }
+}
+
 // Event listeners
 document.body.addEventListener("keydown", function(event){
     if(event.keyCode == 16){
@@ -109,6 +128,7 @@ document.body.addEventListener("keyup", function(event){
 activeKeyTextBox.addEventListener("keyup", function() {
     updateKey(activeKeyTextBox.value);
     resetEncryptTextArea();
+    resetDecryptTextArea();
 });
 
 autoDecryptCheckbox.addEventListener("change", function() {
@@ -117,7 +137,7 @@ autoDecryptCheckbox.addEventListener("change", function() {
 });
 
 encryptTitleCell.addEventListener("click", function() {
-    decryptTitleCell.style.color = "lightgray";
+    decryptTitleCell.style.color = "#b5b5b5";
     decryptTitleCell.style.cursor = "pointer";
     encryptTitleCell.style.color = "black";
     encryptTitleCell.style.cursor = "auto";
@@ -126,7 +146,7 @@ encryptTitleCell.addEventListener("click", function() {
 });
 
 decryptTitleCell.addEventListener("click", function() {
-    encryptTitleCell.style.color = "lightgray";
+    encryptTitleCell.style.color = "#b5b5b5";
     encryptTitleCell.style.cursor = "pointer";
     decryptTitleCell.style.color = "black";
     decryptTitleCell.style.cursor = "auto";
@@ -154,6 +174,10 @@ toEncryptTextArea.addEventListener("keyup", function(){
     resetEncryptTextArea();
 });
 
+toDecryptTextArea.addEventListener("keyup", function(){
+    resetDecryptTextArea();
+});
+
 toEncryptTextArea.addEventListener("keydown", function(event){
     if(event.keyCode == 13 && !shiftPressed){
         encryptMessage();
@@ -172,6 +196,7 @@ hightlightColorSelector.addEventListener("input", function(){
 
 hightlightColorSelector.addEventListener("change", function(){
     updateContentValue("highlightColor", hightlightColorSelector.value, "updatedHightlightColor");
+    updateTextAreasBackgroundColor(hightlightColorSelector.value);
 });
 
 fontColorSelector.addEventListener("input", function(){
@@ -180,6 +205,7 @@ fontColorSelector.addEventListener("input", function(){
 
 fontColorSelector.addEventListener("change", function(){
     updateContentValue("fontColor", fontColorSelector.value, "updatedFontColor");
+    updateTextAreasFontColor(fontColorSelector.value);
 });
 
 // Initialize
@@ -191,7 +217,7 @@ chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
 });
 
 if(navigator.userAgent.search("Firefox") >= 0){
-    var colorSelectionRows = document.getElementsByClassName("colorSelection");
+    let colorSelectionRows = document.getElementsByClassName("colorSelection");
     for(let row of colorSelectionRows){
         row.style.display = "none";
     }
@@ -209,9 +235,11 @@ chrome.storage.sync.get(["autoDecrypt"], function(result){
 chrome.storage.sync.get(["highlightColor"], function(result){
     hightlightColorSelector.value = result["highlightColor"];
     sampleDecryptedText.style.backgroundColor = result["highlightColor"];
+    updateTextAreasBackgroundColor(result["highlightColor"]);
 });
 
 chrome.storage.sync.get(["fontColor"], function(result){
     fontColorSelector.value = result["fontColor"];
     sampleDecryptedText.style.color = result["fontColor"];
+    updateTextAreasFontColor(result["fontColor"]);
 });

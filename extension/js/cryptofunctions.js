@@ -32,18 +32,18 @@ const performCryptoOperation = function(inputText, key, operation){
     if(key === null){
         key = activeKey;
     }
-    var key_256 = get256BitKey(key);
+    let key_256 = get256BitKey(key);
     try{
-        var aesCtr = new aesjs.ModeOfOperation.ctr(key_256, new aesjs.Counter(counterVal));
+        let aesCtr = new aesjs.ModeOfOperation.ctr(key_256, new aesjs.Counter(counterVal));
         if(operation === "encrypt"){
-            var inputBytes = aesjs.utils.utf8.toBytes(inputText);
-            var encryptedBytes = aesCtr.encrypt(inputBytes);
-            var encryptedHex = aesjs.utils.hex.fromBytes(encryptedBytes);
+            let inputBytes = aesjs.utils.utf8.toBytes(inputText);
+            let encryptedBytes = aesCtr.encrypt(inputBytes);
+            let encryptedHex = aesjs.utils.hex.fromBytes(encryptedBytes);
             return "443{" + encryptedHex + "}336";
         } else{
-            var inputBytes = aesjs.utils.hex.toBytes(inputText);
-            var decryptedBytes = aesCtr.decrypt(inputBytes);
-            var plainText = aesjs.utils.utf8.fromBytes(decryptedBytes);
+            let inputBytes = aesjs.utils.hex.toBytes(inputText);
+            let decryptedBytes = aesCtr.decrypt(inputBytes);
+            let plainText = aesjs.utils.utf8.fromBytes(decryptedBytes);
             return plainText;
         }
     } catch(err){

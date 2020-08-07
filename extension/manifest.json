@@ -1,6 +1,6 @@
 {
     "name": "PlainSight",
-    "version": "1.0.2",
+    "version": "1.1.0",
     "description": "Send and receive messages hidden in plain sight.",
     "manifest_version": 2,
 
@@ -16,6 +16,32 @@
         "contextMenus",
         "storage"
     ],
+
+    "commands": {
+        "fullDecrypt": {
+            "suggested_key": {
+                "default": "Alt+Shift+D"
+            },
+            "description": "Decrypt page in active tab"
+        },
+        "revertPage": {
+            "suggested_key": {
+                "default": "Alt+Shift+R"
+            },
+            "description": "Revert page in active tab"
+        },
+        "encryptSelectedInput": {
+            "suggested_key": {
+                "default": "Alt+Shift+E"
+            },
+            "description": "Encrypt the selected text"
+        },
+        "_execute_browser_action": {
+            "suggested_key": {
+                "default": "Alt+Shift+P"
+            }
+        }
+    },
 
     "background": {
         "scripts": ["js/messages.js", "js/background.js"],

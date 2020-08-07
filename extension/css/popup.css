@@ -1,6 +1,7 @@
 body {
     font-family: "Segoe UI", Tahoma, sans-serif;
     font-size: 75%;
+    background: linear-gradient(#eeeeee, #bbbbbb);
 }
 
 button {
@@ -27,6 +28,7 @@ textarea {
     height: 125px;
     resize: none;
     margin: 5px;
+    font-family: 'Courier New';
 }
 
 .alignLeft {
@@ -62,7 +64,7 @@ textarea {
 }
 
 #decryptTitleCell {
-    color: lightgray;
+    color: #b5b5b5;
     cursor: pointer;
 }
 
