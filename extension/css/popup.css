@@ -68,6 +68,12 @@ textarea {
     cursor: pointer;
 }
 
+#helpLink {
+    text-decoration: none;
+    color: gray;
+    font-weight: bold;
+}
+
 #sampleDecrypted {
     padding: 1px 3px !important;
     border-radius: 5px !important;
@@ -79,6 +85,7 @@ textarea {
     background: transparent url(/images/icon16.png) no-repeat left center;
     padding-left: 20px;
     color: gray;
+    user-select: none;
 }
 
 #versionHR {

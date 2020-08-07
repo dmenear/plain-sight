@@ -7,6 +7,9 @@
         <table>
             <tr>
                 <td id="versionCell">PlainSight v1.1.0</td>
+                <td class="alignRight">
+                    <a id="helpLink" href="#">Instructions</a>
+                </td>
             </tr>
         </table>
         <hr id="versionHR">
@@ -18,7 +21,7 @@
             <tbody>
                 <tr>
                     <td colspan="1" id="activeKeyCell">
-                        <strong>Active Key:</strong><br>
+                        <strong>Active Key:</strong><br />
                         <input spellcheck="false" id="plainSightActiveKey" type="text" />
                     </td>
                     <td id="decryptPageCell">
@@ -27,23 +30,23 @@
                     </td>
                 </tr>
                 <tr>
-                    <td style="text-align: center;" colspan="2">
+                    <td class="alignCenter" colspan="2">
                         <br />
                         <input type="checkbox" id="chkAutoDecrypt" name="autoDecrypt" />
                         <label id="lblAutoDecrypt" for="autoDecrypt">Automatically Decrypt</label>
                     </td>
                 </tr>
                 <tr>
-                    <td style="text-align: right; padding-top: 7px;">
+                    <td class="alignRight" style="padding-top: 7px;">
                         <label style="padding-right: 5px;">Highlight Color</label>
                         <button id="highlightColorPicker"></button>
                     </td>
-                    <td style="text-align: left; padding-top: 7px;">
+                    <td class="alignLeft" style="padding-top: 7px;">
                         <button id="fontColorPicker"></button><label style="padding-left: 5px;">Font Color</label>
                     </td>
                 </tr>
                 <tr>
-                    <td style="padding-top: 5px; text-align: center;" colspan="2">
+                    <td class="alignCenter" style="padding-top: 5px;" colspan="2">
                         <span id="sampleDecrypted">Decrypted Message</span>
                     </td>
                 </tr>
@@ -53,8 +56,8 @@
         <table>
             <tr>
                 <td id="encryptTitleCell"><h2>Encrypt Message</h2></td>
-                <td style="text-align: center;"><h2>|</h2></td>
-                <td id="decryptTitleCell" style="text-align: right;"><h2>Decrypt Message</h2></td>
+                <td class="alignCenter"><h2>|</h2></td>
+                <td id="decryptTitleCell" class="alignRight"><h2>Decrypt Message</h2></td>
             </tr>
         </table>
         <table id="encryptForm">
@@ -67,7 +70,7 @@
             <tr><td class="alignCenter"><button id="btnDecrypt">Decrypt</button></td></tr>
             <tr><td class="alignCenter"><textarea readonly id="txtAreaDecrypted"></textarea></td></tr>
         </table>
-        <script src="js/jscolor.js"></script>
+        <script src="js/jscolor.js"></script><!-- Copyright (C) 2020 Jan Odvárko (see README.md) -->
         <script src="js/sha256.min.js"></script>
         <script src="js/aes.js"></script>
         <script src="js/common.js"></script>

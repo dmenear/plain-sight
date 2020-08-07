@@ -7,7 +7,7 @@ const mutationObserved = function(mutations, observer){
     if(autoDecrypt){
         for(let mutation of mutations){
             let mutationElement = mutation.target.parentElement;
-            if(mutationElement.getElementsByTagName("*").length > 0){
+            if(mutationElement != null && mutationElement.getElementsByTagName("*").length > 0){
                 decryptMessages(mutationElement)();
             }
         }
@@ -101,6 +101,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
         getActiveKey(reprocessMessages);
         sendResponse(MSG_OBJ_SUCCESS);
     } else if(request.messageType === MT_ENCRYPT_INPUT){
+        getActiveKey(reprocessMessages);
         encryptSelectedInput();
         sendResponse(MSG_OBJ_SUCCESS);
     } else if(request.messageType === MT_HEARTBEAT){

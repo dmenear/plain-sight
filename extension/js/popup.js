@@ -1,3 +1,5 @@
+// JSColor Copyright (C) 2020 Jan Odvárko (see README.md)
+
 // Elements from popup
 const activeKeyTextBox = document.getElementById("plainSightActiveKey");
 const encryptButton = document.getElementById("btnEncrypt");
@@ -17,6 +19,7 @@ const encryptForm = document.getElementById("encryptForm");
 const decryptForm = document.getElementById("decryptForm");
 const sampleDecryptedText = document.getElementById("sampleDecrypted");
 const autoDecryptLabel = document.getElementById("lblAutoDecrypt");
+const helpLink = document.getElementById("helpLink");
 
 // Variables
 var shiftPressed = false;
@@ -197,6 +200,10 @@ toDecryptTextArea.addEventListener("keydown", function(event){
     if(event.keyCode == 13 && !shiftPressed){
         decryptMessage();
     }
+});
+
+helpLink.addEventListener("click", function() {
+    chrome.tabs.create({active: true, url: "https://github.com/dmenear/plain-sight#how-to-use"});
 });
 
 // Initialize
