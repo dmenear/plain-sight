@@ -1,4 +1,4 @@
-# PlainSight Browser Extension v1.0.2
+# PlainSight Browser Extension v1.1.0
 
 PlainSight is a browser extension designed to allow users to secretly communicate in plain sight. Messages are encrypted and stored within a custom tag as hex. These messages can be placed anywhere on the web and only those who have the extension and the same key have the ability to read them. If other users are using a different key, no error will be thrown but the message will be garbled.
 
