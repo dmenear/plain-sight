@@ -16,11 +16,11 @@ The "Automatically Decrypt" checkbox is checked by default and enables automatic
 
 443{43007fc3354206aec598015ea71bd8cce12e9bc5fd1d118e361ef473b7ef98c0e71e7d09352dd29ce11ae1c5e6e36e750575401bbf9a9cba850c38028b6d9e4657abe2295f01058ce779579c60e55aa958412ed7aadc091e9a0d97a1fcef055753a201d3ccd0aa2c9d0c65defb361cee8e8a6e287f2756a4936df30fd0e0b10654b0d414282638b94600b8a95c14ed3fb956c6d58b3c468c42de5953fee184c2092cfb59d00a41a67647b27e98719f845b13b5e149f18e678f1e8e45f0470000f6a424c2044c24dffd5e6b183e3702aaa59a761bb84c5cf359791fb82f07e97d2444eb7467e68c84eddd76027c742fe16f2f9d84d6eee70d70aaff7ec0f7b55e6647aef9e7dbff79105d189de8c22c69506bea533aa0ffe46174298ce0df879628d30c1a5c85434fae1124343c25b65d6a9df0d230156fd9005c76525756704230cdeaf57e2e0a7d1edc70ca1437ac4739de663c2596ead20695d6d8ad5dcfa6cc95a8cc9d7c380b1338fa3cc4d087054d0c055d4b1b19d6020c70716bad9295fb466467422a38bae279996d0a5b616e5f40afae411210fde8c2dd1c26cc29dc526abb7d7a8b0e5bc605dad4f1735618f3a77205b876226dea44a988c6c5d44baceba619b5fb98629b17f0c0b6b63145d740fe3f48f974f7a99e288e9322fa7a9247dfe10036373b36906efb24f98d5e919965b6c410b2c6e15dc7667954087eb1adb49df9f6641a4a416603b60c43307a7c36d99935874799f075786377782a12c1ec97d690e9c3d25d48e87f7e72ee9d5df900c063e4599cba9579bb764a2ec4f0300c96e699f63c7d34a99cf9825de1f5204371e23769e24b3402e71aca0dca277ba7ab7133c1b8346816673e67eabb58060c003c787ec4fe0a3574fe0bac380e2948b01443c53f88f7cbc148}336
 
-###Keyboard Shortcuts:
-* Open PlainSight Popup (<kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>Q</kbd>)
-* Decrypt Page (<kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>D</kbd>)
-* Revert Page (<kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>R</kbd>)
-* Encrypt Selected Text (<kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>X</kbd>)
+### Keyboard Shortcuts:
+* Open PlainSight Popup (<kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>Q</kbd>)
+* Decrypt Page (<kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>D</kbd>)
+* Revert Page (<kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd>)
+* Encrypt Selected Text (<kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>X</kbd>)
 
 This concludes the PlainSight tutorial for version 1.1.0. Have fun!
 
