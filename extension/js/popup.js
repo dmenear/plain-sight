@@ -15,8 +15,6 @@ const decryptPageCell = document.getElementById("decryptPageCell");
 const decryptTitleCell = document.getElementById("decryptTitleCell");
 const encryptForm = document.getElementById("encryptForm");
 const decryptForm = document.getElementById("decryptForm");
-const hightlightColorSelector = document.getElementById("hightlightColor");
-const fontColorSelector = document.getElementById("fontColor");
 const sampleDecryptedText = document.getElementById("sampleDecrypted");
 const autoDecryptLabel = document.getElementById("lblAutoDecrypt");
 
@@ -112,6 +110,24 @@ const updateTextAreasFontColor = function(newColor){
     }
 }
 
+const highlightColorInput = function(){
+    sampleDecryptedText.style.backgroundColor = this.toHEXString();
+}
+
+const highlightColorChange = function(){
+    updateContentValue("highlightColor", this.toHEXString(), "updatedHightlightColor");
+    updateTextAreasBackgroundColor(this.toHEXString());
+}
+
+const fontColorInput = function(){
+    sampleDecryptedText.style.color = this.toHEXString();
+}
+
+const fontColorChange = function(){
+    updateContentValue("fontColor", this.toHEXString(), "updatedFontColor");
+    updateTextAreasFontColor(this.toHEXString());
+}
+
 // Event listeners
 document.body.addEventListener("keydown", function(event){
     if(event.keyCode == 16){
@@ -125,10 +141,13 @@ document.body.addEventListener("keyup", function(event){
     }
 })
 
-activeKeyTextBox.addEventListener("keyup", function() {
+activeKeyTextBox.addEventListener("keyup", function(event) {
     updateKey(activeKeyTextBox.value);
     resetEncryptTextArea();
     resetDecryptTextArea();
+    if(event.keyCode == 13){
+        activeKeyTextBox.blur();
+    }
 });
 
 autoDecryptCheckbox.addEventListener("change", function() {
@@ -190,38 +209,23 @@ toDecryptTextArea.addEventListener("keydown", function(event){
     }
 });
 
-hightlightColorSelector.addEventListener("input", function(){
-    sampleDecryptedText.style.backgroundColor = hightlightColorSelector.value;
-});
-
-hightlightColorSelector.addEventListener("change", function(){
-    updateContentValue("highlightColor", hightlightColorSelector.value, "updatedHightlightColor");
-    updateTextAreasBackgroundColor(hightlightColorSelector.value);
-});
-
-fontColorSelector.addEventListener("input", function(){
-    sampleDecryptedText.style.color = fontColorSelector.value;
-});
-
-fontColorSelector.addEventListener("change", function(){
-    updateContentValue("fontColor", fontColorSelector.value, "updatedFontColor");
-    updateTextAreasFontColor(fontColorSelector.value);
-});
-
 // Initialize
+const highlightColorPicker = new JSColor("#highlightColorPicker");
+highlightColorPicker.option("width", 120);
+highlightColorPicker.option("onInput", highlightColorInput);
+highlightColorPicker.option("onChange", highlightColorChange);
+
+const fontColorPicker = new JSColor("#fontColorPicker");
+fontColorPicker.option("width", 120);
+fontColorPicker.option("onInput", fontColorInput);
+fontColorPicker.option("onChange", fontColorChange);
+
 chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
     chrome.runtime.sendMessage({
         messageType: "activateExtension",
         tabId: tabs[0].id
     });
 });
-
-if(navigator.userAgent.search("Firefox") >= 0){
-    let colorSelectionRows = document.getElementsByClassName("colorSelection");
-    for(let row of colorSelectionRows){
-        row.style.display = "none";
-    }
-}
 
 chrome.storage.sync.get(["activeKey"], function(result){
     activeKeyTextBox.value = typeof result["activeKey"] !== "undefined" ? result["activeKey"] : "";
@@ -233,13 +237,13 @@ chrome.storage.sync.get(["autoDecrypt"], function(result){
 });
 
 chrome.storage.sync.get(["highlightColor"], function(result){
-    hightlightColorSelector.value = result["highlightColor"];
+    highlightColorPicker.fromString(result["highlightColor"]);
     sampleDecryptedText.style.backgroundColor = result["highlightColor"];
     updateTextAreasBackgroundColor(result["highlightColor"]);
 });
 
 chrome.storage.sync.get(["fontColor"], function(result){
-    fontColorSelector.value = result["fontColor"];
+    fontColorPicker.fromString(result["fontColor"]);
     sampleDecryptedText.style.color = result["fontColor"];
     updateTextAreasFontColor(result["fontColor"]);
 });

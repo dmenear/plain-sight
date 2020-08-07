@@ -69,8 +69,6 @@ textarea {
 }
 
 #sampleDecrypted {
-    background-color: #000000;
-    color: #00ff00;
     padding: 1px 3px !important;
     border-radius: 5px !important;
     line-height: 1.5 !important;
