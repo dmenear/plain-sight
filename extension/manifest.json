@@ -3,6 +3,10 @@
     "version": "1.1.0",
     "description": "Send and receive messages hidden in plain sight.",
     "manifest_version": 2,
+    "developer": {
+        "name": "David Menear",
+        "url": "https://menear.dev"
+    },
 
     "browser_specific_settings": {
         "gecko": {
@@ -32,13 +36,13 @@
         },
         "encryptSelectedInput": {
             "suggested_key": {
-                "default": "Alt+Shift+E"
+                "default": "Alt+Shift+X"
             },
             "description": "Encrypt the selected text"
         },
         "_execute_browser_action": {
             "suggested_key": {
-                "default": "Alt+Shift+P"
+                "default": "Alt+Shift+Q"
             }
         }
     },
