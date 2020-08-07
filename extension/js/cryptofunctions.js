@@ -7,7 +7,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
         activeKey = request.newValue;
         if(typeof reprocessMessages !== "undefined"){
             console.log(getMessage(MSG_KEY_KEY_UPDATE_REPROCESS));
-            reprocessMessages();
+            refreshSettingsAndRun(reprocessMessages)();
         }
         sendResponse(MSG_OBJ_SUCCESS);
     }

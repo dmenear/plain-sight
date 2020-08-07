@@ -49,7 +49,6 @@ const reprocessMessages = function(){
     for(let messageTag of decryptedMessageTags){
         let encryptedText = messageTag.getAttribute(ATTR_ENCRYPTED_MESSAGE);
         messageTag.innerHTML = escapeHTML(getDecryptedMessage(encryptedText, null));
-        updateColors();
     }
 }
 
@@ -70,38 +69,64 @@ const encryptSelectedInput = function(){
     }
 }
 
+const refreshSettingsAndRun = function(functionToRun){
+    return function(){
+        chrome.storage.sync.get([STKEY_AUTO_DECRYPT], function(result){
+            autoDecrypt = result[STKEY_AUTO_DECRYPT];
+            chrome.storage.sync.get([STKEY_HIGHLIGHT_COLOR], function(result){
+                hightlightColor = result[STKEY_HIGHLIGHT_COLOR];
+                chrome.storage.sync.get([STKEY_FONT_COLOR], function(result){
+                    fontColor = result[STKEY_FONT_COLOR];
+                    updateColors();
+                    if(functionToRun != null){
+                        functionToRun();
+                    }
+                });
+            });
+        });
+    };
+}
+
+const initialize = function(){
+    const observer = new MutationObserver(mutationObserved);
+    observer.observe(document.body, mutationObserverConfig);
+
+    if(autoDecrypt){
+        decryptMessages(document.body)();
+    }
+    
+    chrome.runtime.sendMessage({
+        messageType: MT_EXTENSION_ACTIVATED
+    });
+}
+
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
+    getActiveKey(refreshSettingsAndRun(reprocessMessages));
     if(request.messageType === MT_DECRYPT_PAGE){
-        getActiveKey(reprocessMessages);
-        getActiveKey(decryptMessages(document.body));
+        getActiveKey(refreshSettingsAndRun(decryptMessages(document.body)));
         sendResponse(MSG_OBJ_SUCCESS);
     } else if(request.messageType === MT_REVERT_PAGE){
-        if(!autoDecrypt){
-            revertPage();
-            sendResponse(MSG_OBJ_SUCCESS);
-        } else{
-            alert(getMessage(MSG_KEY_REVERT_PAGE_FAILED));
-            sendResponse(MSG_OBJ_FAILURE);
-        }  
+        refreshSettingsAndRun(function(){
+            if(!autoDecrypt){
+                revertPage();
+                sendResponse(MSG_OBJ_SUCCESS);
+            } else{
+                alert(getMessage(MSG_KEY_REVERT_PAGE_FAILED));
+                sendResponse(MSG_OBJ_FAILURE);
+            }  
+        })();
     } else if(request.messageType === MT_UPDATED_AUTO_DECRYPT){
         autoDecrypt = request.newValue;
         if(autoDecrypt){
-            decryptMessages(document.body)();
+            refreshSettingsAndRun(decryptMessages(document.body));
         }
         sendResponse(MSG_OBJ_SUCCESS);
-    } else if(request.messageType === MT_UPDATED_HIGHLIGHT_COLOR){
-        hightlightColor = request.newValue;
-        updateColors();
-        sendResponse(MSG_OBJ_SUCCESS);
-    } else if(request.messageType === MT_UPDATED_FONT_COLOR){
-        fontColor = request.newValue;
-        updateColors();
+    } else if(request.messageType === MT_UPDATED_HIGHLIGHT_COLOR || request.messageType === MT_UPDATED_FONT_COLOR){
+        refreshSettingsAndRun(updateColors)
         sendResponse(MSG_OBJ_SUCCESS);
     } else if (request.messageType === MT_REPROCESS){
-        getActiveKey(reprocessMessages);
         sendResponse(MSG_OBJ_SUCCESS);
     } else if(request.messageType === MT_ENCRYPT_INPUT){
-        getActiveKey(reprocessMessages);
         encryptSelectedInput();
         sendResponse(MSG_OBJ_SUCCESS);
     } else if(request.messageType === MT_HEARTBEAT){
@@ -109,26 +134,4 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
     }
 });
 
-chrome.storage.sync.get([STKEY_AUTO_DECRYPT], function(result){
-    autoDecrypt = result[STKEY_AUTO_DECRYPT];
-    if(autoDecrypt){
-        decryptMessages(document.body)();
-    }
-});
-
-chrome.storage.sync.get([STKEY_HIGHLIGHT_COLOR], function(result){
-    hightlightColor = result[STKEY_HIGHLIGHT_COLOR];
-    updateColors();
-});
-
-chrome.storage.sync.get([STKEY_FONT_COLOR], function(result){
-    fontColor = result[STKEY_FONT_COLOR];
-    updateColors();
-});
-
-const observer = new MutationObserver(mutationObserved);
-observer.observe(document.body, mutationObserverConfig);
-
-chrome.runtime.sendMessage({
-    messageType: MT_EXTENSION_ACTIVATED
-});
+refreshSettingsAndRun(initialize)();
