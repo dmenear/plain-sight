@@ -118,11 +118,11 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
     } else if(request.messageType === MT_UPDATED_AUTO_DECRYPT){
         autoDecrypt = request.newValue;
         if(autoDecrypt){
-            refreshSettingsAndRun(decryptMessages(document.body));
+            refreshSettingsAndRun(decryptMessages(document.body))();
         }
         sendResponse(MSG_OBJ_SUCCESS);
     } else if(request.messageType === MT_UPDATED_HIGHLIGHT_COLOR || request.messageType === MT_UPDATED_FONT_COLOR){
-        refreshSettingsAndRun(updateColors)
+        refreshSettingsAndRun(updateColors)();
         sendResponse(MSG_OBJ_SUCCESS);
     } else if (request.messageType === MT_REPROCESS){
         sendResponse(MSG_OBJ_SUCCESS);
