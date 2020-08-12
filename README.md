@@ -27,8 +27,8 @@ There may be some cases in which messages must be decrypted manually. An example
 This concludes the PlainSight tutorial for version 1.2.0. Have fun!
 
 ---
-###TODO:
-[ ] Fix emoji encoding issues
+### TODO:
+[] Fix emoji encoding issues
 
 ---
 
