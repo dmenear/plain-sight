@@ -28,7 +28,7 @@ This concludes the PlainSight tutorial for version 1.2.0. Have fun!
 
 ---
 ### TODO:
- [ ] Fix emoji encoding issues
+- [ ] Fix emoji encoding issues
 
 ---
 
