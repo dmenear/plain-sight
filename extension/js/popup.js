@@ -1,7 +1,7 @@
 // JSColor Copyright (C) 2020 Jan Odvárko (see README.md)
 
 // Elements from popup
-const activeKeyTextBox = document.getElementById("plainSightActiveKey");
+const activePasswordTextBox = document.getElementById("plainSightActivePassword");
 const encryptButton = document.getElementById("btnEncrypt");
 const decryptButton = document.getElementById("btnDecrypt");
 const pageDecryptButton = document.getElementById("btnDecryptPage");
@@ -11,7 +11,7 @@ const encryptedTextArea = document.getElementById("txtAreaEncrypted");
 const toDecryptTextArea = document.getElementById("txtAreaToDecrypt");
 const decryptedTextArea = document.getElementById("txtAreaDecrypted");
 const autoDecryptCheckbox = document.getElementById("chkAutoDecrypt");
-const activeKeyCell = document.getElementById("activeKeyCell");
+const activePasswordCell = document.getElementById("activePasswordCell");
 const encryptTitleCell = document.getElementById("encryptTitleCell");
 const decryptPageCell = document.getElementById("decryptPageCell");
 const decryptTitleCell = document.getElementById("decryptTitleCell");
@@ -48,23 +48,29 @@ const updateContentValue = function(key, value, messageType){
 }
 
 const encryptMessage = function(){
-    let encryptText = toEncryptTextArea.value;
-    if(encryptText.length > 0){
-        encryptedTextArea.value = getEncryptedMessage(encryptText, activeKeyTextBox.value);
-        encryptedTextArea.select();
-        document.execCommand("copy");
-        encryptButton.innerHTML = "Copied to Clipboard";
-        encryptButton.disabled = true;
-    }
+    getActiveKey(function(){
+        let encryptText = toEncryptTextArea.value;
+        if(encryptText.length > 0){
+            encryptedTextArea.value = getEncryptedMessage(encryptText);
+            if(encryptedTextArea.value.search(/^\[\[PS:/) == -1){
+                encryptedTextArea.select();
+                document.execCommand("copy");
+                encryptButton.innerHTML = "Copied to Clipboard";
+                encryptButton.disabled = true;
+            }
+        }
+    });
 }
 
 const decryptMessage = function(){
-    let decryptText = toDecryptTextArea.value;
-    if(decryptText.search(MSG_PATTERN) >= 0){
-        let match = MSG_PATTERN.exec(decryptText);
-        decryptedTextArea.value = getDecryptedMessage(match[1], activeKeyTextBox.value);
-        decryptedTextArea.focus();
-    }
+    getActiveKey(function(){
+        let decryptText = toDecryptTextArea.value;
+        if(decryptText.search(MSG_PATTERN) >= 0){
+            let match = MSG_PATTERN.exec(decryptText);
+            decryptedTextArea.value = getDecryptedMessage(match[1]);
+            decryptedTextArea.focus();
+        }
+    });
 }
 
 const resetEncryptTextArea = function(){
@@ -79,12 +85,12 @@ const resetDecryptTextArea = function(){
 
 const updateAutoDecryptUI = function(){
     if(autoDecryptCheckbox.checked){
-        activeKeyCell.colSpan = "2";
-        activeKeyCell.style.textAlign = "center";
+        activePasswordCell.colSpan = "2";
+        activePasswordCell.style.textAlign = "center";
         decryptPageCell.style.display = "none";
     } else{
-        activeKeyCell.colSpan = "1";
-        activeKeyCell.style.textAlign = "left";
+        activePasswordCell.colSpan = "1";
+        activePasswordCell.style.textAlign = "left";
         decryptPageCell.style.display = "table-cell";
     }
 }
@@ -134,12 +140,21 @@ document.body.addEventListener("keyup", function(event){
     }
 })
 
-activeKeyTextBox.addEventListener("keyup", function(event) {
-    updateKey(activeKeyTextBox.value);
-    resetEncryptTextArea();
-    resetDecryptTextArea();
+activePasswordTextBox.addEventListener("keyup", function(event) {
+    activePasswordTextBox.style.backgroundColor = "#ffc9c9";
     if(event.keyCode == 13){
-        activeKeyTextBox.blur();
+        activePasswordTextBox.blur();
+    }
+});
+
+activePasswordTextBox.addEventListener("blur", function(event) {
+    activePasswordTextBox.value = activePasswordTextBox.value.trim();
+    if(activePasswordTextBox.value.search(KEY_PATTERN) >= 0){
+        chrome.storage.sync.set({[STKEY_ACTIVE_PASSWORD]: activePasswordTextBox.value});
+        updateKey(generateHashKey(activePasswordTextBox.value));
+        activePasswordTextBox.style.backgroundColor = "#d0ffc9";
+        resetEncryptTextArea();
+        resetDecryptTextArea();
     }
 });
 
@@ -192,12 +207,14 @@ toDecryptTextArea.addEventListener("keyup", function(){
 
 toEncryptTextArea.addEventListener("keydown", function(event){
     if(event.keyCode == 13 && !shiftPressed){
+        toEncryptTextArea.blur();
         encryptMessage();
     }
 });
 
 toDecryptTextArea.addEventListener("keydown", function(event){
     if(event.keyCode == 13 && !shiftPressed){
+        toDecryptTextArea.blur();
         decryptMessage();
     }
 });
@@ -217,8 +234,11 @@ fontColorPicker.option("width", 120);
 fontColorPicker.option("onInput", fontColorInput);
 fontColorPicker.option("onChange", fontColorChange);
 
-chrome.storage.sync.get([STKEY_ACTIVE_KEY], function(result){
-    activeKeyTextBox.value = result[STKEY_ACTIVE_KEY];
+activePasswordTextBox.title = KEY_RULES;
+
+chrome.storage.sync.get([STKEY_ACTIVE_PASSWORD], function(result){
+    activePasswordTextBox.value = result[STKEY_ACTIVE_PASSWORD];
+    activePasswordTextBox.style.backgroundColor = "#d0ffc9";
 });
 
 chrome.storage.sync.get([STKEY_AUTO_DECRYPT], function(result){

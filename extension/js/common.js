@@ -1,6 +1,6 @@
 const MSG_PATTERN = /443\{([0-9a-f]+)\}336/i;
-const COUNTER_VAL = 17;
 
+const STKEY_ACTIVE_PASSWORD = "activePassword";
 const STKEY_ACTIVE_KEY = "activeKey";
 const STKEY_AUTO_DECRYPT = "autoDecrypt";
 const STKEY_HIGHLIGHT_COLOR = "highlightColor";
@@ -8,6 +8,9 @@ const STKEY_FONT_COLOR = "fontColor";
 
 const ENC_PREFIX = "443{";
 const ENC_SUFFIX = "}336";
+
+const KEY_PATTERN = /^[A-Za-z0-9!@#$%^&*()]+$/;
+const KEY_RULES = "May contain numbers, letters, and any of the following characters: ! @ # $ % ^ & * ( )";
 
 const CLASS_DECRYPTED_MESSAGE = "psDecryptedMessage";
 const ATTR_ENCRYPTED_MESSAGE = "data-ps-encrypted";

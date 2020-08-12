@@ -6,7 +6,7 @@
     <body>
         <table>
             <tr>
-                <td id="versionCell">PlainSight v1.1.0</td>
+                <td id="versionCell">PlainSight v1.2.0</td>
                 <td class="alignRight">
                     <a id="helpLink" href="#">Instructions</a>
                 </td>
@@ -20,9 +20,9 @@
             </colgroup>  
             <tbody>
                 <tr>
-                    <td colspan="1" id="activeKeyCell">
-                        <strong>Active Key:</strong><br />
-                        <input spellcheck="false" id="plainSightActiveKey" type="text" />
+                    <td colspan="1" id="activePasswordCell">
+                        <strong>Password:</strong><br />
+                        <input spellcheck="false" id="plainSightActivePassword" type="text" /><br />
                     </td>
                     <td id="decryptPageCell">
                         <button id="btnDecryptPage">Decrypt Page</button>
@@ -71,7 +71,7 @@
             <tr><td class="alignCenter"><textarea readonly id="txtAreaDecrypted"></textarea></td></tr>
         </table>
         <script src="js/jscolor.js"></script><!-- Copyright (C) 2020 Jan Odvárko (see README.md) -->
-        <script src="js/sha256.min.js"></script>
+        <script src="js/scrypt.js"></script>
         <script src="js/aes.js"></script>
         <script src="js/common.js"></script>
         <script src="js/messages.js"></script>

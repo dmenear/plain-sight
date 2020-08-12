@@ -1,6 +1,6 @@
 const STYLESHEETS_TO_INJECT = ["css/content.css"];
-const SCRIPTS_TO_INJECT = ["js/sha256.min.js", "js/aes.js", "js/common.js", "js/messages.js", "js/cryptofunctions.js", "js/content.js"];
-const DEFAULT_KEY = "plainsight";
+const SCRIPTS_TO_INJECT = ["js/scrypt.js", "js/aes.js", "js/common.js", "js/messages.js", "js/cryptofunctions.js", "js/content.js"];
+const DEFAULT_PASSWORD = "plainsight";
 const DEFAULT_AUTO_ENCRYPT = true;
 const DEFAULT_HIGHLIGHT_COLOR = "#1F1F1F";
 const DEFAULT_FONT_COLOR = "#00ff00";
@@ -67,7 +67,8 @@ chrome.runtime.onInstalled.addListener(function() {
         contexts: ["selection"]
     });
 
-    chrome.storage.sync.set({[STKEY_ACTIVE_KEY]: DEFAULT_KEY});
+    chrome.storage.sync.set({[STKEY_ACTIVE_PASSWORD]: DEFAULT_PASSWORD});
+    chrome.storage.sync.set({[STKEY_ACTIVE_KEY]: generateHashKey(DEFAULT_PASSWORD)});
     chrome.storage.sync.set({[STKEY_AUTO_DECRYPT]: DEFAULT_AUTO_ENCRYPT});
     chrome.storage.sync.set({[STKEY_HIGHLIGHT_COLOR]: DEFAULT_HIGHLIGHT_COLOR});
     chrome.storage.sync.set({[STKEY_FONT_COLOR]: DEFAULT_FONT_COLOR});
